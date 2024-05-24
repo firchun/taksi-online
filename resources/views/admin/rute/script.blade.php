@@ -1,32 +1,25 @@
 @push('js')
     <script>
         $(function() {
-            $('#datatable-users').DataTable({
+            $('#datatable-rute').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
-                ajax: '{{ url('users-datatable', $jenis) }}',
+                ajax: '{{ url('rute-datatable') }}',
                 columns: [{
                         data: 'id',
                         name: 'id'
                     },
-                    {
-                        data: 'avatar',
-                        name: 'avatar'
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
 
                     {
-                        data: 'role',
-                        name: 'role'
+                        data: 'nama_lokasi',
+                        name: 'nama_lokasi'
                     },
+                    {
+                        data: 'mobil',
+                        name: 'mobil'
+                    },
+
                     {
                         data: 'action',
                         name: 'action'
@@ -36,28 +29,32 @@
             $('.create-new').click(function() {
                 $('#create').modal('show');
             });
-            window.editUser = function(id) {
+            $('.refresh').click(function() {
+                $('#datatable-rute').DataTable().ajax.reload();
+            });
+            window.editRute = function(id) {
                 $.ajax({
                     type: 'GET',
-                    url: '/users/edit/' + id,
+                    url: '/rute/edit/' + id,
                     success: function(response) {
-                        $('#UsersModalLabel').text('Edit User');
-                        $('#formUserId').val(response.id);
-                        $('#formUserName').val(response.name);
-                        $('#formUserEmail').val(response.email);
-                        $('#UsersModal').modal('show');
+                        $('#customersModalLabel').text('Edit Customer');
+                        $('#formRuteId').val(response.id);
+                        $('#formNamaLokasi').val(response.nama_lokasi);
+                        $('#formLatitude').val(response.latitude);
+                        $('#formLongitude').val(response.longitude);
+                        $('#customersModal').modal('show');
                     },
                     error: function(xhr) {
                         alert('Terjadi kesalahan: ' + xhr.responseText);
                     }
                 });
             };
-            $('#saveUserBtn').click(function() {
-                var formData = $('#userForm').serialize();
+            $('#saveRuteBtn').click(function() {
+                var formData = $('#ruteForm').serialize();
 
                 $.ajax({
                     type: 'POST',
-                    url: '/users/store',
+                    url: '/rute/store',
                     data: formData,
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -65,29 +62,30 @@
                     success: function(response) {
                         alert(response.message);
                         // Refresh DataTable setelah menyimpan perubahan
-                        $('#datatable-users').DataTable().ajax.reload();
-                        $('#usersModal').modal('hide');
+                        $('#datatable-rute').DataTable().ajax.reload();
+                        $('#customersModal').modal('hide');
                     },
                     error: function(xhr) {
                         alert('Terjadi kesalahan: ' + xhr.responseText);
                     }
                 });
             });
-            $('#createUserBtn').click(function() {
-                var formData = $('#createUserForm').serialize();
+            $('#createRuteBtn').click(function() {
+                var formData = $('#createRuteForm').serialize();
 
                 $.ajax({
                     type: 'POST',
-                    url: '/users/store',
+                    url: '/rute/store',
                     data: formData,
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
                         alert(response.message);
-                        $('#userssModalLabel').text('Edit User');
-                        $('#formUserName').val('');
-                        $('#datatable-users').DataTable().ajax.reload();
+                        $('#formCreateNamaLokasi').val('');
+                        $('#formCreateLatitude').val('');
+                        $('#formCreateLongitude').val('');
+                        $('#datatable-rute').DataTable().ajax.reload();
                         $('#create').modal('hide');
                     },
                     error: function(xhr) {
@@ -95,19 +93,17 @@
                     }
                 });
             });
-
-            window.deleteUser = function(id) {
-                if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
+            window.deleteRute = function(id) {
+                if (confirm('Apakah Anda yakin ingin menghapus rute ini?')) {
                     $.ajax({
                         type: 'DELETE',
-                        url: '/users/delete/' + id,
+                        url: '/rute/delete/' + id,
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         success: function(response) {
-                            alert(response.message);
-                            // Refresh DataTable setelah menghapus pengguna
-                            $('#datatable-users').DataTable().ajax.reload();
+                            // alert(response.message);
+                            $('#datatable-rute').DataTable().ajax.reload();
                         },
                         error: function(xhr) {
                             alert('Terjadi kesalahan: ' + xhr.responseText);

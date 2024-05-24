@@ -38,7 +38,7 @@
 
     <!--Favicon-->
     <link rel="icon" href="{{ asset('frontend_theme') }}/images/favicon.png" type="image/x-icon">
-
+    @stack('css')
 </head>
 
 <body id="top-header">
@@ -88,7 +88,7 @@
 
                         </li>
                         <li class="nav-item ">
-                            <a href="#layanan" class="nav-link js-scroll-trigger">
+                            <a href="#rute" class="nav-link js-scroll-trigger">
                                 Rute Kami
                             </a>
                         </li>
@@ -166,7 +166,7 @@
         src="{{ asset('frontend_theme') }}/https://maps.googleapis.com/maps/api/js?key=AIzaSyCcABaamniA6OL5YvYSpB3pFMNrXwXnLwU">
     </script>
     <script src="{{ asset('frontend_theme') }}/plugins/google-map/gmap.js"></script>
-
+    @stack('js')
     <script src="{{ asset('frontend_theme') }}/js/script.js"></script>
 
 </body>

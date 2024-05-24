@@ -87,6 +87,18 @@
                             </span>
                         @enderror
                     </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Jenis</label>
+                        <select name="role" class="form-select" required>
+                            <option value="User">Penumpang</option>
+                            <option value="Supir">Supir</option>
+                        </select>
+                        @error('role')
+                            <span class="text-danger" role="alert">
+                                <small>{{ $message }}</small>
+                            </span>
+                        @enderror
+                    </div>
                     <div class="mb-3 form-password-toggle">
                         <div class="d-flex justify-content-between">
                             <label class="form-label" for="password">Password<br><small>*Minimal 8 atau lebih

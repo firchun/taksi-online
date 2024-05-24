@@ -22,9 +22,33 @@ class UserController extends Controller
         ];
         return view('admin.users.index', $data);
     }
-    public function getUsersDataTable()
+    public function admin()
     {
-        $users = User::select(['id', 'name', 'email', 'created_at', 'updated_at', 'role', 'avatar'])->orderByDesc('id');
+        $data = [
+            'title' => 'Akun Admin',
+            'jenis' => 'Admin'
+        ];
+        return view('admin.users.admin', $data);
+    }
+    public function supir()
+    {
+        $data = [
+            'title' => 'Akun Supir',
+            'jenis' => 'Supir'
+        ];
+        return view('admin.users.supir', $data);
+    }
+    public function user()
+    {
+        $data = [
+            'title' => 'Akun User',
+            'jenis' => 'User'
+        ];
+        return view('admin.users.user', $data);
+    }
+    public function getUsersDataTable($jenis)
+    {
+        $users = User::where('role', $jenis)->orderByDesc('id');
 
         return Datatables::of($users)
             ->addColumn('avatar', function ($user) {

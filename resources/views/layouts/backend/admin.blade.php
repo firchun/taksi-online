@@ -72,11 +72,12 @@
 
 <body>
     <!-- Layout wrapper -->
-    <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-wrapper layout-content-navbar  @if (Auth::user()->role != 'Admin') layout-without-menu @endif">
         <div class="layout-container">
             <!-- Menu -->
-            @include('layouts.backend.menu')
-
+            @if (Auth::user()->role == 'Admin')
+                @include('layouts.backend.menu')
+            @endif
             <!-- / Menu -->
 
             <!-- Layout container -->

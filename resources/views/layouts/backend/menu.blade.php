@@ -69,21 +69,39 @@
             </a>
         </li>
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">customers</span>
+            <span class="menu-header-text">Master Data</span>
         </li>
-        <li class="menu-item {{ request()->is('customers') ? 'active' : '' }}">
-            <a href="{{ url('/customers') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user"></i>
-                <div data-i18n="Analytics">Customers</div>
+        <li class="menu-item {{ request()->is('rute') ? 'active' : '' }}">
+            <a href="{{ url('/rute') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-map"></i>
+                <div data-i18n="Analytics">Rute</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('mobil') ? 'active' : '' }}">
+            <a href="{{ url('/mobil') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-car"></i>
+                <div data-i18n="Analytics">Mobil</div>
             </a>
         </li>
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">users</span>
+            <span class="menu-header-text">Pengguna</span>
         </li>
-        <li class="menu-item {{ request()->is('users') ? 'active' : '' }}">
-            <a href="{{ url('/users') }}" class="menu-link">
+        <li class="menu-item {{ request()->is('users/admin') ? 'active' : '' }}">
+            <a href="{{ url('/users/admin') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
-                <div data-i18n="Analytics">Users</div>
+                <div data-i18n="Analytics">Admin</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('users/supir') ? 'active' : '' }}">
+            <a href="{{ url('/users/supir') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Analytics">Supir</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('users/user') ? 'active' : '' }}">
+            <a href="{{ url('/users/user') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Analytics">Pelanggan</div>
             </a>
         </li>
         <li class="menu-header small text-uppercase">

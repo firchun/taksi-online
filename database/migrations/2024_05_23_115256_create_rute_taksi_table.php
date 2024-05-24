@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreignId('id_taksi');
             $table->foreignId('id_rute');
             $table->timestamps();
+
+            $table->foreign('id_taksi')->references('id')->on('taksi');
+            $table->foreign('id_rute')->references('id')->on('rute');
         });
     }
 
