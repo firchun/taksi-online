@@ -2,7 +2,13 @@
             $taksi = App\Models\Taksi::where('id_user', Auth::user()->id);
             $cek_taksi = $taksi->count();
             $detail_taksi = $taksi->first();
-            $pesanan = App\Models\Pemesanan::where('id_taksi', $taksi->first()->id ?? null)->get();
+            $pesanan = App\Models\Pemesanan::where('id_taksi', $taksi->first()->id ?? null)
+                ->where('pesanan_selesai', 0)
+                ->get();
+            $cek_full = false;
+            if ($pesanan) {
+                $cek_full = $pesanan->sum('jumlah_penumpang') == $detail_taksi->jumlah_penumpang ? true : false;
+            }
         @endphp
         @if ($cek_taksi == 0)
             <div class="alert alert-warning alert-dismissible" role="alert">
@@ -13,52 +19,69 @@
                 </button>
             </div>
         @else
-            <div class="card mb-3">
-                <h5 class="card-header">
-                    @if ($detail_taksi->aktif == 0)
-                        Mulai untuk Online?
-                    @else
-                        Anda sedang Online
-                    @endif
-                </h5>
-                <div class="card-body">
-                    <div class="mb-3 col-12 mb-0">
-                        @if ($detail_taksi->aktif == 0)
-                            <div class="alert alert-warning">
-                                <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin memulai mencari pelanggan ?
-                                </h6>
-                                <p class="mb-0">Silahkan klik tombol dibawah untuk mencari pelanggan anda. dengan
-                                    menekan
-                                    tombol di bawah, status anda akan online pada aplikasi dan siap untuk mencari
-                                    pelanggan
-                                </p>
-                            </div>
-                        @else
-                            <div class="alert alert-primary">
-                                <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin berhenti untuk mencari
-                                    pelanggan?
-                                </h6>
-                                <p class="mb-0">Silahkan klik tombol dibawah untuk mengubah ke offline. dengan
-                                    menekan
-                                    tombol di bawah, status anda akan offline pada aplikasi dan berhenti untuk menerima
-                                    pelanggan
-                                </p>
-                            </div>
-                        @endif
-                    </div>
-                    <form action="{{ route('mobil.status', $detail_taksi->id) }}" method="POST">
-                        @csrf
-                        @if ($detail_taksi->aktif == 0)
-                            <button type="submit" class="btn btn-success ">Nyalakan status Online</button>
-                        @else
-                            <button type="submit" class="btn btn-warning">Matikan status Online</button>
-                        @endif
-                    </form>
+            @if ($pesanan && $cek_full)
+                <div class="alert alert-warning alert-dismissible" role="alert">
+                    Penumpang anda telah penuh dan menunggu penjemputan, segera lakukan penjemputan
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    </button>
                 </div>
-            </div>
+            @endif
+            @if (!$pesanan && !$cek_full)
+                <div class="card mb-3">
+                    <h5 class="card-header">
+                        @if ($detail_taksi->aktif == 0)
+                            Mulai untuk Online?
+                        @else
+                            Anda sedang Online
+                        @endif
+                    </h5>
+                    <div class="card-body">
+                        <div class="mb-3 col-12 mb-0">
+                            @if ($detail_taksi->aktif == 0)
+                                <div class="alert alert-warning">
+                                    <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin memulai mencari pelanggan ?
+                                    </h6>
+                                    <p class="mb-0">Silahkan klik tombol dibawah untuk mencari pelanggan anda. dengan
+                                        menekan
+                                        tombol di bawah, status anda akan online pada aplikasi dan siap untuk mencari
+                                        pelanggan
+                                    </p>
+                                </div>
+                            @else
+                                <div class="alert alert-primary">
+                                    <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin berhenti untuk mencari
+                                        pelanggan?
+                                    </h6>
+                                    <p class="mb-0">Silahkan klik tombol dibawah untuk mengubah ke offline. dengan
+                                        menekan
+                                        tombol di bawah, status anda akan offline pada aplikasi dan berhenti untuk
+                                        menerima
+                                        pelanggan
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+                        <form action="{{ route('mobil.status', $detail_taksi->id) }}" method="POST">
+                            @csrf
+                            @if ($detail_taksi->aktif == 0)
+                                <button type="submit" class="btn btn-success ">Nyalakan status Online</button>
+                            @else
+                                <button type="submit" class="btn btn-warning">Matikan status Online</button>
+                            @endif
+                        </form>
+                    </div>
+                </div>
+            @endif
         @endif
 
         <div class="row">
+            @if ($pesanan)
+                <div class="col-12 d-flex justify-content-center mb-3">
+                    <a href="{{ url('/tracking/supir') }}" class="btn btn-primary btn-lg"><i class="bx bx-map-alt"> </i>
+                        Lihat
+                        Rute Penjemputan</a>
+                </div>
+            @endif
             <div class="col-md-8">
                 @if ($cek_taksi == 0)
                     <div class="card mb-3">
@@ -83,6 +106,11 @@
                                     <label>Warna <span class="text-danger">*</span></label>
                                     <input type="text" name="warna" class="form-control"
                                         placeholder="Isi Warna Mobil" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Jumlah Penumpang <span class="text-danger">*</span></label>
+                                    <input type="number" name="jumlah_penumpang" class="form-control" value="2"
+                                        required>
                                 </div>
                                 <div class="mb-3">
                                     <label>Foto SIM Supir <span class="text-danger">*</span></label>
@@ -115,7 +143,35 @@
                             <h4>Pemesanan Mobil</h4>
                         </div>
                         <div class="card-body">
-
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama Pemesan</th>
+                                            <th>Penumpang</th>
+                                            <th>Rute</th>
+                                            <th>Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($pesanan as $item)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $item->user->name }}<br><small
+                                                        class="text-muted">{{ $item->created_at->diffForHumans() }}</small>
+                                                </td>
+                                                <td>{{ $item->jumlah_penumpang }} Orang</td>
+                                                <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
+                                                    <strong>{{ $item->tujuan->nama_lokasi }}</strong>
+                                                </td>
+                                                <td><a href="" class="btn btn-sm btn-primary">Telah
+                                                        Dijemput</a></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -138,8 +194,13 @@
                                     <td>{!! $detail_taksi->merek . ' - ' . $detail_taksi->warna !!}</td>
                                 </tr>
                                 <tr>
+                                    <td><strong>Jumlah Penumpang</strong></td>
+                                    <td>{{ $detail_taksi->jumlah_penumpang }} Orang</td>
+                                </tr>
+                                <tr>
                                     <td><strong>Tampak Depan</strong></td>
-                                    <td><img src="{{ Storage::url($detail_taksi->foto_depan) }}" style="width: 100px;">
+                                    <td><img src="{{ Storage::url($detail_taksi->foto_depan) }}"
+                                            style="width: 100px;">
                                     </td>
                                 </tr>
                                 <tr>

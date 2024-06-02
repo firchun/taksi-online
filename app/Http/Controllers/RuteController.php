@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pemesanan;
 use App\Models\Rute;
 use App\Models\RuteTaksi;
 use Illuminate\Http\Request;
@@ -20,6 +21,33 @@ class RuteController extends Controller
     {
         $rute = Rute::all();
         return response()->json($rute);
+    }
+    public function rute_penjemputan($id_taksi)
+    {
+        $pesanan = Pemesanan::with('asal')
+            ->select(['id_rute_asal'])
+            ->where('id_taksi', $id_taksi)
+            ->where('pesanan_selesai', 0)
+            ->groupBy('id_rute_asal')
+
+            ->get();
+
+
+
+        return response()->json($pesanan);
+    }
+    public function rute_taksi($id_taksi)
+    {
+        $pesanan = Pemesanan::with(['asal', 'tujuan'])
+            ->select(['id_rute_asal', 'id_rute_tujuan'])
+            ->where('id_taksi', $id_taksi)
+            ->where('pesanan_selesai', 0)
+            ->groupBy('id_rute_asal', 'id_rute_tujuan')
+            ->get();
+
+
+
+        return response()->json($pesanan);
     }
     public function getRuteDataTable()
     {

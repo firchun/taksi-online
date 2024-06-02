@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('id_rute_tujuan');
             $table->integer('jumlah_penumpang');
             $table->boolean('barang_bawaan')->default(0);
-            $table->enum('besar_bawaan', ['Besar', 'Sedang', 'Kecil']);
+            $table->enum('besar_bawaan', ['Besar', 'Sedang', 'Kecil'])->nullable();
             $table->boolean('pesanan_selesai')->default(0);
             $table->timestamps();
 

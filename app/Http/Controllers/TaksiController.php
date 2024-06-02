@@ -48,6 +48,7 @@ class TaksiController extends Controller
             'plat_nomor' => 'required|string',
             'merek' => 'required|string',
             'warna' => 'required|string',
+            'jumlah_penumpang' => 'required|string',
             'foto_sim' => 'required|image',
             'foto_depan' => 'required|image',
             'foto_samping' => 'required|image',
@@ -58,6 +59,7 @@ class TaksiController extends Controller
             'plat_nomor' => $request->input('plat_nomor'),
             'merek' => $request->input('merek'),
             'warna' => $request->input('warna'),
+            'jumlah_penumpang' => $request->input('jumlah_penumpang'),
             'status' => 'Tersedia',
             'aktif' => 0,
         ];

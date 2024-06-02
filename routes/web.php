@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RuteController;
 use App\Http\Controllers\TaksiController;
 use App\Http\Controllers\UserController;
+use App\Models\Pemesanan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -25,19 +27,34 @@ Route::get('/', function () {
 Route::get('/rute-list', [RuteController::class, 'list'])->name('rute-list');
 Auth::routes();
 Route::middleware(['auth:web'])->group(function () {
+    Route::get('/tracking/user', function () {
+        return view('admin.tracking_user', ['title' => 'Rute Taksi']);
+    });
+    Route::post('/send-koordinat', [App\Http\Controllers\KoordinatController::class, 'store'])->name('send-koordinat');
+    Route::get('/get-koordinat/{id_takis}', [App\Http\Controllers\KoordinatController::class, 'getKoordinat'])->name('get-koordinat');
+
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     //akun managemen
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    //pesanan managemen
+    Route::post('/pesanan/store',  [PemesananController::class, 'store'])->name('pesanan.store');
     //customers managemen
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
     Route::post('/customers/store',  [CustomerController::class, 'store'])->name('customers.store');
     Route::get('/customers/edit/{id}',  [CustomerController::class, 'edit'])->name('customers.edit');
     Route::delete('/customers/delete/{id}',  [CustomerController::class, 'destroy'])->name('customers.delete');
     Route::get('/customers-datatable', [CustomerController::class, 'getCustomersDataTable']);
+    //rute
+    Route::get('/rute-taksi/{id_taksi}', [RuteController::class, 'rute_taksi'])->name('rute-taksi');
 });
 Route::middleware(['auth:web', 'role:Supir'])->group(function () {
+    Route::get('/tracking/supir', function () {
+        return view('admin.tracking_supir', ['title' => 'Rute Penjemputan']);
+    });
+    //rute
+    Route::get('/rute-penjemputan/{id_taksi}', [RuteController::class, 'rute_penjemputan'])->name('rute-penjemputan');
     //taksi
     Route::post('/mobil/store', [TaksiController::class, 'store'])->name('mobil.store');
     Route::post('/mobil/add-rute', [TaksiController::class, 'addRute'])->name('mobil.add-rute');
