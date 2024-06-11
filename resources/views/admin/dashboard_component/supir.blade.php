@@ -2,7 +2,8 @@
             $taksi = App\Models\Taksi::where('id_user', Auth::user()->id);
             $cek_taksi = $taksi->count();
             $detail_taksi = $taksi->first();
-            $pesanan = App\Models\Pemesanan::where('id_taksi', $taksi->first()->id ?? null)
+            $pesanan = App\Models\Pemesanan::with(['user', 'mobil'])
+                ->where('id_taksi', $taksi->first()->id ?? null)
                 ->where('pesanan_selesai', 0)
                 ->get();
             $cek_full = false;
@@ -19,14 +20,13 @@
                 </button>
             </div>
         @else
-            @if ($pesanan && $cek_full)
+            @if ($detail_taksi->status == 'Full')
                 <div class="alert alert-warning alert-dismissible" role="alert">
                     Penumpang anda telah penuh dan menunggu penjemputan, segera lakukan penjemputan
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                     </button>
                 </div>
-            @endif
-            @if (!$pesanan && !$cek_full)
+            @elseif ($detail_taksi->status == 'Tersedia')
                 <div class="card mb-3">
                     <h5 class="card-header">
                         @if ($detail_taksi->aktif == 0)
@@ -75,7 +75,7 @@
         @endif
 
         <div class="row">
-            @if ($pesanan)
+            @if ($pesanan->count() != 0)
                 <div class="col-12 d-flex justify-content-center mb-3">
                     <a href="{{ url('/tracking/supir') }}" class="btn btn-primary btn-lg"><i class="bx bx-map-alt"> </i>
                         Lihat
@@ -151,7 +151,8 @@
                                             <th>Nama Pemesan</th>
                                             <th>Penumpang</th>
                                             <th>Rute</th>
-                                            <th>Update</th>
+                                            <th>Sampai</th>
+                                            <th>Selesai</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -165,8 +166,26 @@
                                                 <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
                                                     <strong>{{ $item->tujuan->nama_lokasi }}</strong>
                                                 </td>
-                                                <td><a href="" class="btn btn-sm btn-primary">Telah
-                                                        Dijemput</a></td>
+                                                <td>
+                                                    <a href="https://wa.me/{{ $item->user->no_hp }}?text=Hai%2C%20{{ $item->user->name }}%0AMobil%20pesanan%20anda%20telah%20sampai%20di%20lokasi%20penjemputan.%0A%0A------------------------------------------------%0Aketerangan%20mobil%20%3A%0Ano.%20Plat%20%3A%20{{ $item->mobil->plat_nomor }}%0AMerek%20Mobil%20%3A%20{{ $item->mobil->merek . ' ' . $item->mobil->warna }}%0Asupir%20%3A%20{{ $item->mobil->supir->name }}"
+                                                        target="__blank" class="btn btn-sm btn-success">Sampai di lokasi
+                                                        penjemputan</a><br>
+                                                    <small class="text-muted">Klik tombol ini jika telah sampai di
+                                                        lokasi penjemputan</small>
+                                                </td>
+
+
+                                                <td>
+                                                    @if ($item->pesanan_selesai == 0)
+                                                        <a href="{{ route('pesanan-selesai', $item->id) }}"
+                                                            class="btn btn-sm btn-primary">Pesanan
+                                                            Selesai</a><br>
+                                                        <small class=" text-muted">Klik tombol ini jika Pesanan telah
+                                                            selesai</small>
+                                                    @else
+                                                        <small class="text-muted">Telah Selesai</small>
+                                                    @endif
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Pemesanan;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -31,5 +33,13 @@ class HomeController extends Controller
             'customers' => Customer::count()
         ];
         return view('admin.dashboard', $data);
+    }
+    public function riwayatUser()
+    {
+        $data = [
+            'title' => 'Data Booking',
+            'pemesanan' => Pemesanan::where('id_user', Auth::id())->get(),
+        ];
+        return view('admin.riwayat_user', $data);
     }
 }

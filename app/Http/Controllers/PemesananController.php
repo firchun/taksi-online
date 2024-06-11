@@ -66,4 +66,22 @@ class PemesananController extends Controller
         session()->flash($type, $message);
         return back()->withInput();
     }
+    public function pesananSelesai($id)
+    {
+        $pemesanan = Pemesanan::find($id);
+        $pemesanan->pesanan_selesai = 1;
+        $pemesanan->save();
+        //pengecekan
+        $cek_taksi = Taksi::find($pemesanan->id_taksi)->first()->jumlah_penumpang;
+        $cek_pemesanan = Pemesanan::where('id_taksi', $pemesanan->id_taksi)->where('pesanan_selesai', 0)->sum('jumlah_penumpang');
+        $cek_penumpang = $cek_taksi - $cek_pemesanan;
+        if ($cek_penumpang != 0) {
+            $taksi = Taksi::find($pemesanan->id_taksi);
+            $taksi->status = 'Tersedia';
+            $taksi->save();
+        }
+
+        session()->flash('berhasil menyelesaikan pesanana');
+        return back();
+    }
 }

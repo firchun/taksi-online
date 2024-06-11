@@ -1,6 +1,9 @@
 <div class="text-center mb-3">
     <h4>Selamat datang kembali <span class="text-primary">{{ Auth::user()->name }}</span></h4>
-
+    <div class="d-flex justify-content-center">
+        <a href="{{ url('/home') }}" class="btn btn-primary m-1">Dashboard</a>
+        <a href="{{ url('/riwayat-user') }}" class="btn btn-outline-primary m-1">Data Booking</a>
+    </div>
 </div>
 <hr>
 <div class="row justify-content-center">

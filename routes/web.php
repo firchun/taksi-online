@@ -34,6 +34,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/get-koordinat/{id_takis}', [App\Http\Controllers\KoordinatController::class, 'getKoordinat'])->name('get-koordinat');
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/riwayat-user', [App\Http\Controllers\HomeController::class, 'riwayatUser'])->name('riwayat-user');
 
     //akun managemen
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -54,6 +55,7 @@ Route::middleware(['auth:web', 'role:Supir'])->group(function () {
         return view('admin.tracking_supir', ['title' => 'Rute Penjemputan']);
     });
     //rute
+    Route::get('/pesanan-selesai/{id}', [PemesananController::class, 'pesananSelesai'])->name('pesanan-selesai');
     Route::get('/rute-penjemputan/{id_taksi}', [RuteController::class, 'rute_penjemputan'])->name('rute-penjemputan');
     //taksi
     Route::post('/mobil/store', [TaksiController::class, 'store'])->name('mobil.store');
