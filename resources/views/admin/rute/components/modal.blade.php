@@ -20,7 +20,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="formLongitude" class="form-label">Longitude</label>
-                        <input type="text" class="form-control" id="formLongitude" name="Longitude" required>
+                        <input type="text" class="form-control" id="formLongitude" name="longitude" required>
                     </div>
 
                 </form>
