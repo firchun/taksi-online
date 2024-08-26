@@ -1,5 +1,26 @@
 @extends('layouts.frontend.app')
+@push('css')
+    <style>
+        .rating {
+            /* Makes the stars appear from right to left */
+            display: inline-block;
+            font-size: 1.3rem;
+            /* Adjust as needed */
+        }
 
+        .rating .fa-star {
+            color: #d3d3d3;
+            /* Gray color for inactive stars */
+            margin: 0 1px;
+            /* Adjust spacing between stars if needed */
+        }
+
+        .rating .fa-star.active {
+            color: #ffcc00;
+            /* Yellow color for active stars */
+        }
+    </style>
+@endpush
 @section('content')
     <section class="banner-area py-7">
         <!-- Content -->
@@ -181,40 +202,27 @@
                 </div>
                 <div class="col-lg-8 col-sm-12 col-md-12">
                     <div class="row">
-                        <div class="col-lg-6">
-                            <div class="test-inner ">
-                                <div class="test-author-thumb d-flex">
-                                    <img src="{{ asset('frontend_theme') }}/images/client/test-1.jpg"
-                                        alt="Testimonial author" class="img-fluid">
-                                    <div class="test-author-info">
-                                        <h4>Will Barrow</h4>
-                                        <h6>Sunrise Paradise Hotel</h6>
+                        @foreach (App\Models\Ulasan::limit(4)->get() as $item)
+                            <div class="col-lg-6">
+                                <div class="test-inner ">
+                                    <div class="test-author-thumb d-flex">
+                                        <img src="{{ asset('img/user.png') }}" alt="Testimonial author" class="img-fluid">
+                                        <div class="test-author-info">
+                                            <h4>{{ $item->user->name }}</h4>
+                                            <div class="rating d-flex">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <span
+                                                        class="fa fa-star {{ $i <= $item->rating ? 'active' : '' }}"></span>
+                                                @endfor
+                                            </div>
+                                        </div>
                                     </div>
+                                    {{ $item->ulasan }}
+                                    <i class="fa fa-quote-right"></i>
                                 </div>
-
-                                Quas ut distinctio tenetur animi nihil rem, amet dolorum totam. Ab repudiandae tempore qui
-                                fugiat amet ipsa id omnis ipsam, laudantium! Dolorem.
-
-                                <i class="fa fa-quote-right"></i>
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="test-inner ">
-                                <div class="test-author-thumb d-flex">
-                                    <img src="{{ asset('frontend_theme') }}/images/client/test-2.jpg"
-                                        alt="Testimonial author" class="img-fluid">
-                                    <div class="test-author-info">
-                                        <h4>Will Barrow</h4>
-                                        <h6>Sunrise Paradise Hotel</h6>
-                                    </div>
-                                </div>
+                        @endforeach
 
-                                Quas ut distinctio tenetur animi nihil rem, amet dolorum totam. Ab repudiandae tempore qui
-                                fugiat amet ipsa id omnis ipsam, laudantium! Dolorem.
-
-                                <i class="fa fa-quote-right"></i>
-                            </div>
-                        </div>
                     </div>
 
                 </div>

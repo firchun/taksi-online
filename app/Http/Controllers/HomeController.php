@@ -38,7 +38,7 @@ class HomeController extends Controller
     {
         $data = [
             'title' => 'Data Booking',
-            'pemesanan' => Pemesanan::where('id_user', Auth::id())->get(),
+            'pemesanan' => Pemesanan::with(['mobil'])->where('id_user', Auth::id())->get(),
         ];
         return view('admin.riwayat_user', $data);
     }

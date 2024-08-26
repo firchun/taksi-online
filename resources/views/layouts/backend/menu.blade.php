@@ -84,6 +84,15 @@
             </a>
         </li>
         <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Ulasan</span>
+        </li>
+        <li class="menu-item {{ request()->is('ulasan') ? 'active' : '' }}">
+            <a href="{{ url('/ulasan') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-message"></i>
+                <div data-i18n="Analytics">Ulasan Pelanggan</div>
+            </a>
+        </li>
+        <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Pengguna</span>
         </li>
         <li class="menu-item {{ request()->is('users/admin') ? 'active' : '' }}">

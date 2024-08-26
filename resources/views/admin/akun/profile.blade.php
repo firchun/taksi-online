@@ -81,6 +81,17 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group  mb-3">
+                                        <label class="form-control-label" for="no_hp">No. HP/WA (aktif)<span
+                                                class="small text-danger">*</span></label>
+                                        <input type="text" id="no_hp"
+                                            class="form-control  @error('no_hp') is-invalid @enderror" name="no_hp"
+                                            placeholder="Nomor HP/WA" value="{{ old('no_hp', Auth::user()->no_hp) }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-lg-4">
                                     <div class="form-group focused  mb-3">
                                         <label class="form-control-label" for="current_password">Current

@@ -62,26 +62,34 @@
                 <h4 class="mb-2">Welcome 👋</h4>
                 <p class="mb-4">Silahkan login terlebih dahulu</p>
 
-                <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
-                    {{-- <input type="hidden" name="role" value="mahasiswa"> --}}
-
+                <form id="formAuthentication" class="mb-3" action="{{ route('register') }}" method="POST">
+                    @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label" id="no-title">Nama Lengkap</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="Nama Lengkap"
-                            autofocus />
+                            autofocus required />
                         @error('name')
                             <span class="text-danger" role="alert">
                                 <small>{{ $message }}</small>
                             </span>
                         @enderror
                     </div>
-
-
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="Alamat Email"
-                            autofocus />
+                            autofocus required />
                         @error('email')
+                            <span class="text-danger" role="alert">
+                                <small>{{ $message }}</small>
+                            </span>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="no_hp" class="form-label">Nomor HP/WA (aktif)</label><br>
+                        <small>Gunakan +62 atau merubah angka 08 jadi +628</small>
+                        <input type="text" class="form-control" id="no_hp" name="no_hp" placeholder="Nomor HP/WA"
+                            autofocus value="+62" required />
+                        @error('no_hp')
                             <span class="text-danger" role="alert">
                                 <small>{{ $message }}</small>
                             </span>

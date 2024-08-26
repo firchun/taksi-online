@@ -20,6 +20,16 @@
                 </button>
             </div>
         @else
+            <div class="btn-group mb-3">
+                <a href="{{ route('home') }}" class="btn btn-primary">
+                    <i class="bx bx-home"></i>
+                    Home
+                </a>
+                <a href="{{ route('ulasan') }}" class="btn btn-success">
+                    <i class="bx bx-message"></i>
+                    Ulasan
+                </a>
+            </div>
             @if ($detail_taksi->status == 'Full')
                 <div class="alert alert-warning alert-dismissible" role="alert">
                     Penumpang anda telah penuh dan menunggu penjemputan, segera lakukan penjemputan
@@ -168,7 +178,8 @@
                                                 </td>
                                                 <td>
                                                     <a href="https://wa.me/{{ $item->user->no_hp }}?text=Hai%2C%20{{ $item->user->name }}%0AMobil%20pesanan%20anda%20telah%20sampai%20di%20lokasi%20penjemputan.%0A%0A------------------------------------------------%0Aketerangan%20mobil%20%3A%0Ano.%20Plat%20%3A%20{{ $item->mobil->plat_nomor }}%0AMerek%20Mobil%20%3A%20{{ $item->mobil->merek . ' ' . $item->mobil->warna }}%0Asupir%20%3A%20{{ $item->mobil->supir->name }}"
-                                                        target="__blank" class="btn btn-sm btn-success">Sampai di lokasi
+                                                        target="__blank" class="btn btn-sm btn-success">Sampai di
+                                                        lokasi
                                                         penjemputan</a><br>
                                                     <small class="text-muted">Klik tombol ini jika telah sampai di
                                                         lokasi penjemputan</small>

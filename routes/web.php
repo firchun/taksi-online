@@ -5,8 +5,10 @@ use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RuteController;
 use App\Http\Controllers\TaksiController;
+use App\Http\Controllers\UlasanController;
 use App\Http\Controllers\UserController;
 use App\Models\Pemesanan;
+use App\Models\Ulasan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -41,12 +43,10 @@ Route::middleware(['auth:web'])->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     //pesanan managemen
     Route::post('/pesanan/store',  [PemesananController::class, 'store'])->name('pesanan.store');
-    //customers managemen
-    Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
-    Route::post('/customers/store',  [CustomerController::class, 'store'])->name('customers.store');
-    Route::get('/customers/edit/{id}',  [CustomerController::class, 'edit'])->name('customers.edit');
-    Route::delete('/customers/delete/{id}',  [CustomerController::class, 'destroy'])->name('customers.delete');
-    Route::get('/customers-datatable', [CustomerController::class, 'getCustomersDataTable']);
+    //ulasan managemen
+    Route::post('/ulasan/store',  [UlasanController::class, 'store'])->name('ulasan.store');
+    //ulasan managemen
+    Route::get('/ulasan-datatable', [UlasanController::class, 'getUlasanDataTable']);
     //rute
     Route::get('/rute-taksi/{id_taksi}', [RuteController::class, 'rute_taksi'])->name('rute-taksi');
 });
@@ -62,6 +62,9 @@ Route::middleware(['auth:web', 'role:Supir'])->group(function () {
     Route::post('/mobil/add-rute', [TaksiController::class, 'addRute'])->name('mobil.add-rute');
     Route::delete('/mobil/delete-rute/{id}', [TaksiController::class, 'destroyRute'])->name('mobil.delete-rute');
     Route::post('/mobil/status/{id}', [TaksiController::class, 'updateStatus'])->name('mobil.status');
+});
+Route::middleware(['auth:web', 'role:Admin,Supir'])->group(function () {
+    Route::get('/ulasan', [UlasanController::class, 'index'])->name('ulasan');
 });
 Route::middleware(['auth:web', 'role:Admin'])->group(function () {
     //mobil managemen
