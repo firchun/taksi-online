@@ -43,6 +43,10 @@
                         $('#formLatitude').val(response.latitude);
                         $('#formLongitude').val(response.longitude);
                         $('#customersModal').modal('show');
+
+                        $('#customersModal').on('shown.bs.modal', function() {
+                            setupEditMap(response.latitude, response.longitude);
+                        });
                     },
                     error: function(xhr) {
                         alert('Terjadi kesalahan: ' + xhr.responseText);
