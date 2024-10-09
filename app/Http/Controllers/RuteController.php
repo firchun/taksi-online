@@ -29,10 +29,7 @@ class RuteController extends Controller
             ->where('id_taksi', $id_taksi)
             ->where('pesanan_selesai', 0)
             ->groupBy('id_rute_asal')
-
             ->get();
-
-
 
         return response()->json($pesanan);
     }

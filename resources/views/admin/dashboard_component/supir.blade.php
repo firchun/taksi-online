@@ -8,7 +8,7 @@
                 ->get();
             $cek_full = false;
             if ($pesanan) {
-                $cek_full = $pesanan->sum('jumlah_penumpang') == $detail_taksi->jumlah_penumpang ? true : false;
+                $cek_full = $pesanan->sum('jumlah_penumpang') ?? 0 == $detail_taksi->jumlah_penumpang ? true : false;
             }
         @endphp
         @if ($cek_taksi == 0)
@@ -84,7 +84,7 @@
             @endif
         @endif
 
-        <div class="row">
+        <div class="row justify-content-center">
             @if ($pesanan->count() != 0)
                 <div class="col-12 d-flex justify-content-center mb-3">
                     <a href="{{ url('/tracking/supir') }}" class="btn btn-primary btn-lg"><i class="bx bx-map-alt"> </i>
@@ -206,9 +206,9 @@
                     </div>
                 @endif
             </div>
-            <div class="col-md-4 ">
 
-                @if ($cek_taksi != 0)
+            @if ($cek_taksi != 0)
+                <div class="col-md-4 ">
                     <div class="card mb-3">
                         <div class="card-header">
                             <h4>Detail Mobil</h4>
@@ -275,8 +275,8 @@
                             </ul>
                         </div>
                     </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
         @push('js')
             <script>
