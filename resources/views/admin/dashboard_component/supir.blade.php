@@ -134,6 +134,10 @@
                                     <label>Foto Mobil (Tampak Samping) <span class="text-danger">*</span></label>
                                     <input type="file" name="foto_samping" class="form-control" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label>Foto Mobil (Tampak Dalam/kursi) <span class="text-danger">*</span></label>
+                                    <input type="file" name="foto_dalam" class="form-control" required>
+                                </div>
                                 <hr>
                                 <h6>Rute Yang dilayani</h6>
                                 <div class="mb-3">
@@ -239,6 +243,14 @@
                                             style="width: 100px;">
                                     </td>
                                 </tr>
+                                @if ($detail_taksi->foto_dalam != null)
+                                    <tr>
+                                        <td><strong>Tampak Dalam</strong></td>
+                                        <td><img src="{{ Storage::url($detail_taksi->foto_dalam) }}"
+                                                style="width: 100px;">
+                                        </td>
+                                    </tr>
+                                @endif
                             </table>
                         </div>
                     </div>

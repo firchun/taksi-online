@@ -16,7 +16,7 @@
         <div class="col-sm-6 col-lg-4">
             <div class="card p-2 h-100 shadow-none border border-primary">
                 <div class="rounded-2 text-center mb-3">
-                    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                    <div id="carouselExample-{{ $item->id }}" class="carousel slide" data-bs-ride="carousel">
 
                         <div class="carousel-inner">
                             <div class="carousel-item active">
@@ -29,13 +29,20 @@
                                     alt="Second slide" style="height: 200px; width:100%; object-fit:cover;">
 
                             </div>
-
+                            @if ($item->foto_dalam != null)
+                                <div class="carousel-item ">
+                                    <img class="d-block w-100" src="{{ Storage::url($item->foto_dalam) }}"
+                                        alt="Second slide" style="height: 200px; width:100%; object-fit:cover;">
+                                </div>
+                            @endif
                         </div>
-                        <a class="carousel-control-prev" href="#carouselExample" role="button" data-bs-slide="prev">
+                        <a class="carousel-control-prev" href="#carouselExample-{{ $item->id }}" role="button"
+                            data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Previous</span>
                         </a>
-                        <a class="carousel-control-next" href="#carouselExample" role="button" data-bs-slide="next">
+                        <a class="carousel-control-next" href="#carouselExample-{{ $item->id }}" role="button"
+                            data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Next</span>
                         </a>
@@ -109,7 +116,8 @@
                             <input type="hidden" name="id_taksi" value="{{ $item->id }}">
                             <div class="mb-3">
                                 <label>Nama Penumpang</label>
-                                <input type="text" class="form-control" value="{{ Auth::user()->name }}" readonly>
+                                <input type="text" class="form-control" value="{{ Auth::user()->name }}"
+                                    readonly>
                             </div>
                             <div class="mb-3">
                                 <label>Lokasi Asal</label>

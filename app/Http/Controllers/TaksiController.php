@@ -93,6 +93,16 @@ class TaksiController extends Controller
             $file_path = 'public/berkas/' . $filename;
             $taksiData['foto_samping'] = isset($file_path) ? $file_path : '';
         }
+        if ($request->hasFile('foto_dalam')) {
+            $filename = Str::random(32) . '.' . $request->file('foto_dalam')->getClientOriginalExtension();
+
+            $image = $request->file('foto_dalam');
+            $image->storeAs('public/berkas', $filename);
+
+
+            $file_path = 'public/berkas/' . $filename;
+            $taksiData['foto_dalam'] = isset($file_path) ? $file_path : '';
+        }
         $type = 'danger';
         $message = 'Gagal menyimpan data';
         if ($request->filled('id')) {
