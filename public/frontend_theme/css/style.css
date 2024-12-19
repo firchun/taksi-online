@@ -1154,9 +1154,11 @@ h5.subtitle {
 PRICING-2
 ---------------------------*/
 .pricing-box {
-  border: 1px solid #eee;
+  background-color: white;
+  border: 1px solid #fff;
   padding: 60px;
   transition: all 300ms ease-in-out;
+  color: black;
 }
 .pricing-box .price-block h2 span {
   font-size: 12px;
@@ -1168,7 +1170,7 @@ PRICING-2
   border-color: rgb(29, 28, 28);
 }
 .pricing-box:hover .price-features li {
-  color: #eee;
+  color: #fff;
 }
 .pricing-box:hover .price-block h2 {
   color: #fff;

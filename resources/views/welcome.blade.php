@@ -29,7 +29,7 @@
                 <div class="col-md-12 col-lg-7 text-center text-lg-left">
                     <div class="main-banner">
                         <!-- Heading -->
-                        <h1 class="display-4 mb-4 font-weight-normal">
+                        <h1 class="display-4 mb-4 font-weight-bold text-dark">
                             Solusi perjalanan anda tanpa ribet
                         </h1>
 
@@ -59,37 +59,57 @@
             </div> <!-- / .row -->
         </div> <!-- / .container -->
     </section>
-    <section class="section bg-grey" id="layanan">
+    <section class="section bg-primary p-5" id="layanan">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-3 col-sm-6 col-md-6">
-                    <div class="text-center feature-block">
-                        <div class="img-icon-block mb-4">
-                            <i class="ti-thumb-up"></i>
+                    <div class="card mb-2 border-0"
+                        style="border-radius: 20px;box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;">
+                        <div class="card-body">
+                            <div class="text-center feature-block mt-3">
+                                <div class="img-icon-block mb-4">
+                                    <i class="ti-thumb-up"></i>
+                                </div>
+                                <h4 class="mb-2">Terpercaya</h4>
+                                <p class="text-dark">Kami menawarkan perjalanan yang aman dan nyaman untuk pelanggan setia
+                                    kami.</p>
+                            </div>
                         </div>
-                        <h4 class="mb-2">Terpercaya</h4>
-                        <p>Kami menawarkan perjalanan yang aman dan nyaman untuk pelanggan setia kami.</p>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-sm-6 col-md-6">
-                    <div class="text-center feature-block">
-                        <div class="img-icon-block mb-4">
-                            <i class="ti-wallet"></i>
+                    <div class="card mb-2 border-0"
+                        style="border-radius: 20px;box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;">
+                        <div class="card-body">
+                            <div class="text-center feature-block mt-3">
+                                <div class="img-icon-block mb-4">
+                                    <i class="ti-wallet"></i>
+                                </div>
+                                <h4 class="mb-2">Hemat</h4>
+                                <p class="text-dark">Kami menawarkan kemudahan akses dan menghemat dana anda untuk dapat
+                                    bepergian antar kota
+                                </p>
+                            </div>
                         </div>
-                        <h4 class="mb-2">Hemat</h4>
-                        <p>Kami menawarkan kemudahan akses dan menghemat dana anda untuk dapat bepergian antar kota</p>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-sm-6 col-md-6">
-                    <div class="text-center feature-block">
-                        <div class="img-icon-block mb-4">
-                            <i class="ti-dashboard"></i>
+                    <div class="card mb-2 border-0"
+                        style="border-radius: 20px;box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;">
+                        <div class="card-body">
+                            <div class="text-center feature-block mt-3">
+                                <div class="img-icon-block mb-4">
+                                    <i class="ti-dashboard"></i>
+                                </div>
+                                <h4 class="mb-2">Cepat</h4>
+                                <p class="text-dark">kamu mengutamakan kenyamanan pengguna dengan kecepatan kami dalam
+                                    respon pesanana
+                                    pelanggan setia
+                                    kami.</p>
+                            </div>
                         </div>
-                        <h4 class="mb-2">Cepat</h4>
-                        <p>kamu mengutamakan kenyamanan pengguna dengan kecepatan kami dalam respon pesanana pelanggan setia
-                            kami.</p>
                     </div>
                 </div>
             </div>
@@ -111,34 +131,43 @@
             <div class="row">
 
                 <div class="col-lg-8 col-md-8">
-                    <div id="map" style="border-radius: 10px"></div>
+                    <div id="map"
+                        style="border:white 8px solid;border-radius: 10px; box-shadow: rgba(17, 12, 46, 0.182) 0px 48px 100px 0px;">
+                    </div>
                 </div>
                 <div class="col-lg-4 col-md-4">
-                    <h3>Daftar Rute</h3>
-                    <div class="list-group">
-                        @foreach (App\Models\Rute::all() as $item)
-                            <a href="#rute" class="list-group-item list-group-item-action"><i class="fas fa-map-pin">
-                                </i>
-                                {{ $item->nama_lokasi }}</a>
-                        @endforeach
+                    <div class="card border-0 mt-2"
+                        style="border-radius: 10px;box-shadow: rgba(17, 12, 46, 0.182) 0px 48px 100px 0px;">
+                        <div class="card-body">
+                            <h3>Daftar Rute</h3>
+                            <div class="list-group">
+                                @foreach (App\Models\Rute::all() as $item)
+                                    <a href="#rute" class="list-group-item list-group-item-action"><i
+                                            class="fas fa-map-pin">
+                                        </i>
+                                        {{ $item->nama_lokasi }}</a>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </section>
-    <section class="section bg-grey" id="harga">
+    <section class="section bg-primary p-5" id="harga">
         <!-- Content -->
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-6 text-center">
                     <div class="section-heading">
                         <!-- Heading -->
-                        <h2 class="section-title">
+                        <h2 class="section-title text-white">
                             Harga Layanan Kami
                         </h2>
 
                         <!-- Subheading -->
-                        <p>
+                        <p class="text-white">
                             Kami menawarkan biaya yang sesuai dengan kantong anda
                         </p>
                     </div>
@@ -147,13 +176,13 @@
 
             <div class="row justify-content-center">
                 <div class="col-lg-4 col-sm-6 col-md-6">
-                    <div class="pricing-box shadow shadow-md" style="border-radius: 20px;">
+                    <div class="pricing-box shadow shadow-md mt-0 p-4" style="border-radius: 20px; ">
                         <h3>Standar</h3>
                         <div class="price-block">
                             <h2>75K<span>/Orang</span></h2>
                         </div>
 
-                        <ul class="price-features list-unstyled">
+                        <ul class="price-features list-unstyled mb-3">
                             <li>Penjemputan</li>
                             <li>1 Kursi</li>
                             <li>Pemberhentian sesuai tujuan</li>
@@ -173,11 +202,12 @@
             <div class="row align-items-center">
                 @foreach (App\Models\Taksi::all() as $item)
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <div class="test-inner border border-secondary p-2">
+                        <div class="test-inner border border-success p-2" style="background-color: white;">
                             <div class="test-author-thumb d-flex align-items-center">
-                                <img src="{{ Storage::url($item->foto_depan) }}" alt="Testimonial author" class="img-fluid">
+                                <img src="{{ Storage::url($item->foto_depan) }}" alt="Testimonial author"
+                                    class="img-fluid shadow-sm p-2">
                                 <div class="test-author-info">
-                                    <h3>{{ $item->plat_nomor }}</h3>
+                                    <h3 class="text-success">{{ $item->plat_nomor }}</h3>
                                     <h4>{{ $item->merek }} - {{ $item->warna }}</h4>
                                     <h6>Supir : {{ $item->supir->name }}</h6>
                                     </h6>
@@ -206,7 +236,8 @@
                             <div class="col-lg-6">
                                 <div class="test-inner ">
                                     <div class="test-author-thumb d-flex">
-                                        <img src="{{ asset('img/user.png') }}" alt="Testimonial author" class="img-fluid">
+                                        <img src="{{ asset('img/user.png') }}" alt="Testimonial author"
+                                            class="img-fluid">
                                         <div class="test-author-info">
                                             <h4>{{ $item->user->name }}</h4>
                                             <div class="rating d-flex">

@@ -122,8 +122,8 @@
         </div> <!-- / .container -->
     </div>
     @yield('content')
-    <footer class="section " id="footer">
-        <div class="overlay footer-overlay"></div>
+    <footer class="section" id="footer">
+        <div class="overlay footer-overlay bg-primary"></div>
         <!--Content -->
         <div class="container">
 
@@ -132,12 +132,12 @@
                 <div class="col-lg-12">
                     <div class="overflow-hidden">
                         <!-- Copyright -->
-                        <p class="footer-copy">
+                        <p class="footer-copy text-white">
                             Copyright &copy;
                             <script>
                                 var CurrentYear = new Date().getFullYear()
                                 document.write(CurrentYear)
-                            </script>. Designed &amp; Developed by <a class="current-year"
+                            </script>. Designed &amp; Developed by <a class=" text-white"
                                 href="{{ url('/') }}">{{ env('APP_NAME') }}</a>
                         </p>
                     </div>
