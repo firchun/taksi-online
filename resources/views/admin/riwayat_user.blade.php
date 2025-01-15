@@ -21,6 +21,7 @@
                             <th>Tanggal Booking</th>
                             <th>Penumpang</th>
                             <th>Rute</th>
+                            <th>Total Harga</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,6 +68,9 @@
                                 <td>
                                     Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
                                     <strong>{{ $item->tujuan->nama_lokasi }}</strong>
+                                </td>
+                                <td class="text-danger">
+                                    Rp {{ number_format(75000 * $item->jumlah_penumpang) }}
                                 </td>
                             </tr>
                         @endforeach

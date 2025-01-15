@@ -142,7 +142,7 @@
     {{-- <script src="{{ asset('backend_theme/') }}/assets/sweet-alert/sweetalert2.all.min.js"></script>
     <script src="{{ asset('backend_theme/') }}/assets/sweet-alert/sweetalert2.min.css"></script>
     <script src="{{ asset('backend_theme/') }}/assets/sweet-alert/sweetalert2.all.js"></script> --}}
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    {{-- <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script> --}}
     </script>
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

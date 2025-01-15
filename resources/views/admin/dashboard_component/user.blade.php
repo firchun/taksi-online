@@ -88,6 +88,7 @@
                                     </i>
                                     Rute</a>
                             @endif
+
                             <button class="btn btn-md btn-label-primary  btn-block" type="button"
                                 data-bs-toggle="modal" data-bs-target="#booking{{ $item->id }}"
                                 @if ($item->status == 'Full') disabled @endif>
@@ -142,6 +143,20 @@
                                 <input type="number" class="form-control" value="1" name="jumlah_penumpang"
                                     min="1">
                             </div>
+                            <!-- Daftar Nama Penumpang -->
+                            <div class="mb-3 p-3 border border-primary rounded">
+                                <label>Daftar Penumpang</label>
+                                <div id="penumpang-list">
+                                    <div class="input-group mb-2">
+                                        <input type="text" name="nama[]" class="form-control"
+                                            placeholder="Nama Penumpang">
+                                        <button type="button"
+                                            class="btn btn-outline-danger remove-penumpang">Hapus</button>
+                                    </div>
+                                </div>
+                                <button type="button" id="add-penumpang" class="btn btn-outline-primary">Tambah
+                                    Penumpang</button>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -168,7 +183,12 @@
                                     <strong>{{ $penumpang->user->name }} ({{ $penumpang->jumlah_penumpang }}
                                         Orang)</strong><br><small>Dari :
                                         {{ $penumpang->asal->nama_lokasi }} , Menuju :
-                                        {{ $penumpang->tujuan->nama_lokasi }}</small>
+                                        {{ $penumpang->tujuan->nama_lokasi }}</small><br>
+                                    <small>
+                                        Penumpang : @foreach (App\Models\Penumpang::where('id_pemesanan', $penumpang->id)->get() as $listPenumpang)
+                                            {{ $listPenumpang->nama . ', ' }}
+                                        @endforeach
+                                    </small>
                                 </li>
                             @empty
                                 <li class="list-group-item list-group-item-action">
@@ -182,3 +202,33 @@
         </div>
     @endforeach
 </div>
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const penumpangList = document.getElementById('penumpang-list');
+            const addPenumpangBtn = document.getElementById('add-penumpang');
+
+            addPenumpangBtn.addEventListener('click', function() {
+                const newPenumpang = document.createElement('div');
+                newPenumpang.classList.add('input-group', 'mb-2');
+                newPenumpang.innerHTML = `
+                <input type="text" name="nama_penumpang[]" class="form-control" placeholder="Nama Penumpang">
+                <button type="button" class="btn btn-outline-danger remove-penumpang">Hapus</button>
+            `;
+                penumpangList.appendChild(newPenumpang);
+
+                // Tambahkan event listener untuk tombol "Hapus"
+                newPenumpang.querySelector('.remove-penumpang').addEventListener('click', function() {
+                    penumpangList.removeChild(newPenumpang);
+                });
+            });
+
+            // Event listener untuk tombol "Hapus" pada elemen awal
+            penumpangList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-penumpang')) {
+                    e.target.closest('.input-group').remove();
+                }
+            });
+        });
+    </script>
+@endpush

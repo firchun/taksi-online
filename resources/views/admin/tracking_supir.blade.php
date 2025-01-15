@@ -80,103 +80,127 @@
             subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
         }).addTo(map);
 
+        // Variabel global untuk marker dan rute
+        var currentMarker;
+        var routingControl;
+        var carIcon = L.icon({
+            iconUrl: '{{ asset('img/mobil.png') }}',
+            iconSize: [60, 60] // ukuran ikon dalam piksel
+        });
+
         // Fungsi untuk mengambil data dari API
         function getDataFromAPI() {
             var detailTaksiId = {{ $detail_taksi->id }};
             var currentLatitude, currentLongitude;
-            var carIcon = L.icon({
-                iconUrl: '{{ asset('img/mobil.png') }}',
-                iconSize: [60, 60], // ukuran ikon dalam piksel
-                // iconAnchor: [16, 16],
-            });
-            var currentMarker;
 
+            // Fungsi untuk mendapatkan koordinat dari API
             function fetchCoordinates() {
                 $.ajax({
                     type: "GET",
-                    url: "/get-koordinat/" + {{ $detail_taksi->id }},
+                    url: "/get-koordinat/" + detailTaksiId,
                     success: function(response) {
-
-                        var data = response;
-                        currentLatitude = data.latitude;
-                        currentLongitude = data.longitude;
-                        // console.log(response);
-                        updateCurrentPosition();
+                        if (response.latitude && response.longitude) {
+                            currentLatitude = response.latitude;
+                            currentLongitude = response.longitude;
+                            updateCurrentPosition();
+                        } else {
+                            console.warn('Invalid coordinates received from API.');
+                        }
                     },
                     error: function(xhr, status, error) {
-                        console.error("Error:", error);
+                        console.error("Error fetching coordinates:", error);
                     }
                 });
             }
-            setInterval(fetchCoordinates, 5000);
 
+            // Fungsi untuk memperbarui posisi kendaraan dan rute
             function updateCurrentPosition() {
                 var currentPosition = L.latLng(currentLatitude, currentLongitude);
 
+                // Hapus marker kendaraan sebelumnya jika ada
                 if (currentMarker) {
                     map.removeLayer(currentMarker);
                 }
+
+                // Tambahkan marker kendaraan ke peta
                 currentMarker = L.marker(currentPosition, {
                     draggable: false,
                     icon: carIcon
                 }).addTo(map).bindPopup('Anda disini');
 
-                // Perbarui peta secara eksplisit untuk memastikan perubahan diterapkan
-                map.invalidateSize();
-                // Lakukan AJAX request setelah mendapatkan posisi
+                // Panggil API untuk mendapatkan data rute
                 $.ajax({
                     url: '/rute-penjemputan/' + detailTaksiId,
                     method: 'GET',
                     success: function(data) {
+                        // Hapus marker lokasi penjemputan sebelumnya
                         map.eachLayer(function(layer) {
                             if (layer instanceof L.Marker && layer !== currentMarker) {
                                 map.removeLayer(layer);
                             }
                         });
+
+                        // Tambahkan marker lokasi penjemputan
                         data.forEach(function(item) {
-                            var marker = L.marker([item.asal.latitude, item.asal
-                                    .longitude
-                                ], {
+                            if (item.asal && item.asal.latitude && item.asal.longitude && item.asal
+                                .nama_lokasi) {
+                                L.marker([item.asal.latitude, item.asal.longitude], {
                                     draggable: false
-                                }).addTo(map)
-                                .bindPopup(item.asal.nama_lokasi);
-                        });
-
-                        // Membuat waypoints dari data yang diterima
-                        var waypoints = data.map(function(item) {
-                            return L.latLng(item.asal.latitude, item.asal.longitude);
-                        });
-                        waypoints.unshift(currentPosition);
-
-                        // Menambahkan rute antara waypoint
-                        var routingControl = L.Routing.control({
-                            waypoints: waypoints,
-                            routeWhileDragging: false,
-                            show: false,
-                            createMarker: function() {
-                                return null;
+                                }).addTo(map).bindPopup(item.asal.nama_lokasi);
+                            } else {
+                                console.warn('Invalid route item:', item);
                             }
-                        }).addTo(map);
+                        });
+
+                        // Perbarui rute di peta
+                        updateRoute(currentPosition, data);
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error fetching data:', error);
+                        console.error('Error fetching route data:', error);
                     }
                 });
-
             }
 
-            // Panggil updateCurrentPosition() untuk pertama kali
-            updateCurrentPosition();
+            // Fungsi untuk memperbarui rute di peta
+            function updateRoute(currentPosition, data) {
+                if (data && Array.isArray(data) && data.length > 0) {
+                    // Hapus rute sebelumnya jika ada
+                    if (routingControl) {
+                        map.removeControl(routingControl);
+                    }
 
-            // Atur interval untuk memanggil updateCurrentPosition() setiap 5 detik
-            // setInterval(updateCurrentPosition, 5000);
+                    // Membuat waypoints dari data API
+                    var waypoints = data.map(function(item) {
+                        if (item.asal && item.asal.latitude && item.asal.longitude) {
+                            return L.latLng(item.asal.latitude, item.asal.longitude);
+                        }
+                    }).filter(Boolean); // Hapus waypoint yang undefined
+
+                    // Tambahkan posisi saat ini sebagai waypoint pertama
+                    waypoints.unshift(currentPosition);
+
+                    // Tambahkan kontrol rute ke peta
+                    routingControl = L.Routing.control({
+                        waypoints: waypoints,
+                        routeWhileDragging: false,
+                        show: false,
+                        createMarker: function() {
+                            return null; // Tidak membuat marker otomatis
+                        }
+                    }).addTo(map);
+                } else {
+                    console.warn('No valid route data received.');
+                }
+            }
+
+            // Panggil fetchCoordinates setiap 5 detik
+            setInterval(fetchCoordinates, 5000);
         }
-
-
 
         // Panggil fungsi untuk mengambil data dari API
         getDataFromAPI();
 
+        // Tangani error routing
         map.on('routing_error', function(e) {
             console.error('Routing error:', e.error);
         });

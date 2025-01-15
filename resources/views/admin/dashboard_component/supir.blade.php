@@ -176,7 +176,12 @@
                                                 <td>{{ $item->user->name }}<br><small
                                                         class="text-muted">{{ $item->created_at->diffForHumans() }}</small>
                                                 </td>
-                                                <td>{{ $item->jumlah_penumpang }} Orang</td>
+                                                <td>{{ $item->jumlah_penumpang }} Orang<br><small>
+                                                        @foreach (App\Models\Penumpang::where('id_pemesanan', $item->id)->get() as $listPenumpang)
+                                                            <span
+                                                                class="p-1 bg-primary mx-1 text-white rounded">{{ $listPenumpang->nama }}</span>
+                                                        @endforeach
+                                                    </small></td>
                                                 <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
                                                     <strong>{{ $item->tujuan->nama_lokasi }}</strong>
                                                 </td>
