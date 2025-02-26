@@ -43,6 +43,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     //pesanan managemen
     Route::post('/pesanan/store',  [PemesananController::class, 'store'])->name('pesanan.store');
+    Route::get('/kursi-tersedia/{id_taksi}',  [PemesananController::class, 'kursiTersedia'])->name('kursi-tersedia');
     //ulasan managemen
     Route::post('/ulasan/store',  [UlasanController::class, 'store'])->name('ulasan.store');
     //ulasan managemen

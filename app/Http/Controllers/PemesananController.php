@@ -19,6 +19,7 @@ class PemesananController extends Controller
             'id_rute_tujuan' => 'required|max:255',
             'jumlah_penumpang' => 'required|integer|min:1',
             'nama' => 'nullable|array|min:1', // Nama boleh kosong
+            'nomor_kursi.*' => 'string|in:DP,TL,TK,BL,BK', // Validasi kursi yang tersedia
             'nama.*' => 'nullable|string|max:255',
         ]);
 
@@ -43,6 +44,18 @@ class PemesananController extends Controller
         $kapasitasTaksi = $taksi->jumlah_penumpang;
         $totalPesanan = Pemesanan::where('id_taksi', $taksi->id)->where('pesanan_selesai', 0)->sum('jumlah_penumpang');
         $sisaKapasitas = $kapasitasTaksi - $totalPesanan;
+
+        if (count($request->nomor_kursi) > $kapasitasTaksi) {
+            return response()->json(['message' => 'Jumlah kursi melebihi kapasitas taksi!'], 400);
+        }
+        // Cek apakah ada kursi yang sudah dipesan
+        $kursiSudahDipesan = Pemesanan::where('id_taksi', $taksi->id)
+            ->whereJsonContains('nomor_kursi', $request->nomor_kursi)
+            ->exists();
+
+        if ($kursiSudahDipesan) {
+            return response()->json(['message' => 'Salah satu kursi sudah dipesan! Silakan pilih kursi lain.'], 400);
+        }
 
         // Periksa kapasitas
         if ($totalPesanan >= $kapasitasTaksi) {
@@ -108,5 +121,16 @@ class PemesananController extends Controller
 
         session()->flash('berhasil menyelesaikan pesanana');
         return back();
+    }
+    public function kursiTersedia($id_taksi)
+    {
+        $kursiSemua = ['DP', 'TL', 'TK', 'BL', 'BK']; // Daftar kursi tetap
+        $kursiDipesan = Pemesanan::where('id_taksi', $id_taksi)->pluck('nomor_kursi')->flatten()->toArray();
+
+        $kursiTersedia = array_diff($kursiSemua, $kursiDipesan);
+
+        return response()->json([
+            'kursi_tersedia' => $kursiTersedia,
+        ]);
     }
 }

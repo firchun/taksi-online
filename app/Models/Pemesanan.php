@@ -11,7 +11,9 @@ class Pemesanan extends Model
     use HasFactory;
     protected $table = 'pemesanan';
     protected $guarded = [];
-
+    protected $casts = [
+        'nomor_kursi' => 'array',
+    ];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user');

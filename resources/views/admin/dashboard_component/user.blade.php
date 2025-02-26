@@ -141,7 +141,16 @@
                             <div class="mb-3">
                                 <label>Jumlah Penumpang</label>
                                 <input type="number" class="form-control" value="1" name="jumlah_penumpang"
-                                    min="1">
+                                    id="jumlah-penumpang" min="1">
+                            </div>
+                            <!-- Pilihan Kursi -->
+                            <div class="mb-3">
+                                <label>Pilih Kursi</label>
+                                <div id="kursi-container">
+
+                                </div>
+                                <small class="text-danger" id="kursi-warning" style="display: none;">Maksimal kursi
+                                    sesuai jumlah penumpang!</small>
                             </div>
                             <!-- Daftar Nama Penumpang -->
                             <div class="mb-3 p-3 border border-primary rounded">
@@ -202,7 +211,89 @@
         </div>
     @endforeach
 </div>
+@push('css')
+    <style>
+        #kursi-container {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
+@endpush
 @push('js')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchKursiTersedia();
+        });
+
+        function fetchKursiTersedia() {
+            const jumlahPenumpangInput = document.getElementById("jumlah-penumpang");
+            const kursiContainer = document.getElementById("kursi-container");
+            const kursiWarning = document.getElementById("kursi-warning");
+            const idTaksi = document.querySelector("input[name='id_taksi']").value;
+
+            if (!kursiContainer || !idTaksi) {
+                console.error("Element tidak ditemukan! Pastikan ID atau Name sudah benar.");
+                return;
+            }
+
+            // AJAX untuk mendapatkan kursi yang tersedia
+            fetch(`/kursi-tersedia/${idTaksi}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Data kursi tersedia:", data);
+                    if (!data.kursi_tersedia || data.kursi_tersedia.length === 0) {
+                        kursiContainer.innerHTML = "<p class='text-danger'>Tidak ada kursi tersedia.</p>";
+                        return;
+                    }
+
+                    kursiContainer.innerHTML = ""; // Kosongkan sebelum menambahkan kursi baru
+                    data.kursi_tersedia.forEach(kursi => {
+                        let div = document.createElement("div");
+                        div.classList.add("form-check");
+                        div.innerHTML = `
+                        <input class="form-check-input kursi-checkbox" type="checkbox" name="nomor_kursi[]" value="${kursi}" id="kursi-${kursi}">
+                        <label class="form-check-label" for="kursi-${kursi}">${kursi}</label>
+                    `;
+                        kursiContainer.appendChild(div);
+                    });
+
+                    // Panggil event listener untuk checkbox setelah elemen dibuat
+                    addCheckboxEventListeners();
+                })
+                .catch(error => console.error("Error fetching kursi:", error));
+        }
+
+        function addCheckboxEventListeners() {
+            const jumlahPenumpangInput = document.getElementById("jumlah-penumpang");
+            const kursiWarning = document.getElementById("kursi-warning");
+            const kursiCheckboxes = document.querySelectorAll(".kursi-checkbox");
+
+            function updateCheckboxLimit() {
+                let jumlahPenumpang = parseInt(jumlahPenumpangInput.value) || 1;
+                let checkedKursi = document.querySelectorAll(".kursi-checkbox:checked");
+
+                if (checkedKursi.length > jumlahPenumpang) {
+                    kursiWarning.style.display = "block";
+                } else {
+                    kursiWarning.style.display = "none";
+                }
+
+                kursiCheckboxes.forEach(checkbox => {
+                    if (checkedKursi.length >= jumlahPenumpang && !checkbox.checked) {
+                        checkbox.disabled = true;
+                    } else {
+                        checkbox.disabled = false;
+                    }
+                });
+            }
+
+            jumlahPenumpangInput.addEventListener("input", updateCheckboxLimit);
+            kursiCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", updateCheckboxLimit);
+            });
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const penumpangList = document.getElementById('penumpang-list');
