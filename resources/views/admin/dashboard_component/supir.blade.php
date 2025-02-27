@@ -181,11 +181,13 @@
                                                         Kursi :
                                                         @php
                                                             $kursiMapping = [
-                                                                'DP' => 'Depan (Samping Sopir)',
-                                                                'TL' => 'Tengah Kiri',
-                                                                'TK' => 'Tengah Kanan',
-                                                                'BL' => 'Belakang Kiri',
-                                                                'BK' => 'Belakang Kanan',
+                                                                'DP' => '1. Depan (Samping Sopir)',
+                                                                'TL' => '2. Tengah Kiri',
+                                                                'BS' => '3. Bench Seat',
+                                                                'TK' => '4. Tengah Kanan',
+                                                                'BL' => '5. Belakang Kiri',
+                                                                'BT' => '6. Belakang Tengah',
+                                                                'BK' => '7. Belakang Kanan',
                                                             ];
                                                             $nomorKursi = json_decode($item->nomor_kursi, true) ?? [];
                                                         @endphp
@@ -211,8 +213,6 @@
                                             <small class="text-muted">Klik tombol ini jika telah sampai di
                                                 lokasi penjemputan</small>
                                         </td>
-
-
                                         <td>
                                             @if ($item->pesanan_selesai == 0)
                                                 <a href="{{ route('pesanan-selesai', $item->id) }}"

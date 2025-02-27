@@ -102,7 +102,7 @@
         {{-- modal  --}}
         <div class="modal fade" id="booking{{ $item->id }}" tabindex="-1" aria-labelledby="customersModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="userModalLabel">Booking Mobil : {{ $item->plat_nomor }}</h5>
@@ -111,63 +111,74 @@
                     <form action="{{ route('pesanan.store') }}" method="POST">
                         @csrf
                         <div class="modal-body">
-
-                            <h4>Formulir pemesanan :</h4>
-                            <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
-                            <input type="hidden" name="id_taksi" value="{{ $item->id }}">
-                            <div class="mb-3">
-                                <label>Nama Penumpang</label>
-                                <input type="text" class="form-control" value="{{ Auth::user()->name }}"
-                                    readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label>Lokasi Asal</label>
-                                <select name="id_rute_asal" class="form-select" required>
-                                    <option>Pilih Lokasi</option>
-                                    @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
-                                        <option value="{{ $rute->id_rute }}">{{ $rute->rute->nama_lokasi }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label>Lokasi Tujuan</label>
-                                <select name="id_rute_tujuan" class="form-select" required>
-                                    <option>Pilih Lokasi</option>
-                                    @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
-                                        <option value="{{ $rute->id_rute }}">{{ $rute->rute->nama_lokasi }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label>Jumlah Penumpang</label>
-                                <input type="number" class="form-control" value="1" name="jumlah_penumpang"
-                                    id="jumlah-penumpang" min="1"
-                                    max="{{ App\Models\Taksi::find($item->id)->jumlah_penumpang - $penumpang }}"
-                                    required>
-                            </div>
-                            <!-- Pilihan Kursi -->
-                            <div class="mb-3">
-                                <label>Pilih Kursi</label>
-                                <div id="kursi-container" class="p-2 border border-warning"
-                                    style="border-radius: 10px;">
-
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <img src="{{ asset('img/layout_mobil.jpg') }}" alt="Foto layout"
+                                        class="img-fluid rounded-3">
                                 </div>
-                                <small class="text-danger" id="kursi-warning" style="display: none;">Maksimal kursi
-                                    sesuai jumlah penumpang!</small>
-                            </div>
-                            <!-- Daftar Nama Penumpang -->
-                            <div class="mb-3 p-3 border border-primary rounded">
-                                <label>Daftar Penumpang</label>
-                                <div id="penumpang-list">
-                                    <div class="input-group mb-2">
-                                        <input type="text" name="nama[]" class="form-control"
-                                            placeholder="Nama Penumpang">
-                                        <button type="button"
-                                            class="btn btn-outline-danger remove-penumpang">Hapus</button>
+                                <div class="col-lg-6">
+                                    <h4>Formulir pemesanan :</h4>
+                                    <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
+                                    <input type="hidden" name="id_taksi" value="{{ $item->id }}">
+                                    <div class="mb-3">
+                                        <label>Nama Penumpang</label>
+                                        <input type="text" class="form-control" value="{{ Auth::user()->name }}"
+                                            readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Lokasi Asal</label>
+                                        <select name="id_rute_asal" class="form-select" required>
+                                            <option>Pilih Lokasi</option>
+                                            @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
+                                                <option value="{{ $rute->id_rute }}">{{ $rute->rute->nama_lokasi }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Lokasi Tujuan</label>
+                                        <select name="id_rute_tujuan" class="form-select" required>
+                                            <option>Pilih Lokasi</option>
+                                            @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
+                                                <option value="{{ $rute->id_rute }}">{{ $rute->rute->nama_lokasi }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Jumlah Penumpang</label>
+                                        <input type="number" class="form-control" value="1"
+                                            name="jumlah_penumpang" id="jumlah-penumpang" min="1"
+                                            max="{{ App\Models\Taksi::find($item->id)->jumlah_penumpang - $penumpang }}"
+                                            required>
+                                    </div>
+                                    <!-- Pilihan Kursi -->
+                                    <div class="mb-3">
+                                        <label>Pilih Kursi</label>
+                                        <div id="kursi-container" class="p-2 border border-warning"
+                                            style="border-radius: 10px;">
+
+                                        </div>
+                                        <small class="text-danger" id="kursi-warning" style="display: none;">Maksimal
+                                            kursi
+                                            sesuai jumlah penumpang!</small>
+                                    </div>
+                                    <!-- Daftar Nama Penumpang -->
+                                    <div class="mb-3 p-3 border border-primary rounded">
+                                        <label>Daftar Penumpang</label>
+                                        <div id="penumpang-list">
+                                            <div class="input-group mb-2">
+                                                <input type="text" name="nama[]" class="form-control"
+                                                    placeholder="Nama Penumpang">
+                                                <button type="button"
+                                                    class="btn btn-outline-danger remove-penumpang">Hapus</button>
+                                            </div>
+                                        </div>
+                                        <button type="button" id="add-penumpang"
+                                            class="btn btn-outline-primary">Tambah
+                                            Penumpang</button>
                                     </div>
                                 </div>
-                                <button type="button" id="add-penumpang" class="btn btn-outline-primary">Tambah
-                                    Penumpang</button>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -207,11 +218,13 @@
                                         <b>
                                             @php
                                                 $kursiMapping = [
-                                                    'DP' => 'Depan (Samping Sopir)',
-                                                    'TL' => 'Tengah Kiri',
-                                                    'TK' => 'Tengah Kanan',
-                                                    'BL' => 'Belakang Kiri',
-                                                    'BK' => 'Belakang Kanan',
+                                                    'DP' => '1. Depan (Samping Sopir)',
+                                                    'TL' => '2. Tengah Kiri',
+                                                    'BS' => '3. Bench Seat',
+                                                    'TK' => '4. Tengah Kanan',
+                                                    'BL' => '5. Belakang Kiri',
+                                                    'BT' => '6. Belakang Tengah',
+                                                    'BK' => '7. Belakang Kanan',
                                                 ];
                                                 $nomorKursi = json_decode($penumpang->nomor_kursi, true) ?? [];
                                             @endphp

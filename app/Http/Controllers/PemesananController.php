@@ -134,7 +134,7 @@ class PemesananController extends Controller
     public function kursiTersedia($id_taksi)
     {
         // Daftar semua kursi tetap yang tersedia di dalam taksi
-        $kursiSemua = ['DP', 'TL', 'TK', 'BL', 'BK'];
+        $kursiSemua = ['DP', 'TL', 'BS', 'TK', 'BL', 'BK', 'BT'];
 
         // Ambil data taksi
         $taksi = Taksi::find($id_taksi);
@@ -160,29 +160,29 @@ class PemesananController extends Controller
             ->flatten()
             ->toArray();
 
-        // Hitung jumlah kursi yang masih tersedia
+        // Filter kursi yang masih tersedia
         $kursiTersedia = array_values(array_diff($kursiSemua, $kursiDipesan));
 
         // Jika taksi sudah penuh
         if ($totalPenumpang >= $jumlahKursiTaksi) {
             return response()->json([
-                'message' => 'Kursi telah penuh'
+                'message' => 'Kursi telah penuh',
+                'kursi_tersedia' => [],
+                'sisa_kursi' => 0
             ], 400);
         }
-
-        // Batasi kursi yang ditampilkan sesuai dengan sisa kapasitas
-        $sisaKursi = $jumlahKursiTaksi - $totalPenumpang;
-        $kursiTersedia = array_slice($kursiTersedia, 0, $sisaKursi);
 
         // Format hasil agar lebih informatif dengan menambahkan deskripsi kursi
         $kursiDenganKeterangan = array_map(fn($kursi) => [
             'kode' => $kursi,
             'keterangan' => match ($kursi) {
-                'DP' => 'Depan (Samping Sopir)',
-                'TL' => 'Tengah Kiri',
-                'TK' => 'Tengah Kanan',
-                'BL' => 'Belakang Kiri',
-                'BK' => 'Belakang Kanan',
+                'DP' => '1. Depan (Samping Sopir)',
+                'TL' => '2. Tengah Kiri',
+                'BS' => '3. Bench Seat',
+                'TK' => '4. Tengah Kanan',
+                'BL' => '5. Belakang Kiri',
+                'BT' => '6. Belakang Tengah',
+                'BK' => '7. Belakang Kanan',
                 default => 'Tidak diketahui'
             }
         ], $kursiTersedia);
