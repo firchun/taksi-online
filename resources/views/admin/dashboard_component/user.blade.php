@@ -89,9 +89,9 @@
                                     Rute</a>
                             @endif
 
-                            <button class="btn btn-md btn-label-primary  btn-block" type="button"
+                            <button class="btn btn-md btn-label-primary btn-block open-booking-modal" type="button"
                                 data-bs-toggle="modal" data-bs-target="#booking{{ $item->id }}"
-                                @if ($item->status == 'Full') disabled @endif>
+                                data-id-taksi="{{ $item->id }}" @if ($item->status == 'Full') disabled @endif>
                                 <span class="me-2">Booking</span>
                             </button>
                         </div>
@@ -141,12 +141,15 @@
                             <div class="mb-3">
                                 <label>Jumlah Penumpang</label>
                                 <input type="number" class="form-control" value="1" name="jumlah_penumpang"
-                                    id="jumlah-penumpang" min="1">
+                                    id="jumlah-penumpang" min="1"
+                                    max="{{ App\Models\Taksi::find($item->id)->jumlah_penumpang - $penumpang }}"
+                                    required>
                             </div>
                             <!-- Pilihan Kursi -->
                             <div class="mb-3">
                                 <label>Pilih Kursi</label>
-                                <div id="kursi-container">
+                                <div id="kursi-container" class="p-2 border border-warning"
+                                    style="border-radius: 10px;">
 
                                 </div>
                                 <small class="text-danger" id="kursi-warning" style="display: none;">Maksimal kursi
@@ -190,19 +193,36 @@
                             @forelse (App\Models\Pemesanan::where('id_taksi', $item->id)->where('pesanan_selesai', 0)->get() as $penumpang)
                                 <li class="list-group-item list-group-item-action">
                                     <strong>{{ $penumpang->user->name }} ({{ $penumpang->jumlah_penumpang }}
-                                        Orang)</strong><br><small>Dari :
-                                        {{ $penumpang->asal->nama_lokasi }} , Menuju :
+                                        Orang)</strong><br>
+                                    <small>Dari : {{ $penumpang->asal->nama_lokasi }} , Menuju :
                                         {{ $penumpang->tujuan->nama_lokasi }}</small><br>
                                     <small>
-                                        Penumpang : @foreach (App\Models\Penumpang::where('id_pemesanan', $penumpang->id)->get() as $listPenumpang)
-                                            {{ $listPenumpang->nama . ', ' }}
+                                        Penumpang:
+                                        @foreach (App\Models\Penumpang::where('id_pemesanan', $penumpang->id)->get() as $listPenumpang)
+                                            {{ $listPenumpang->nama }}{{ !$loop->last ? ', ' : '' }}
                                         @endforeach
+                                    </small><br>
+                                    <small>
+                                        Nomor Kursi:
+                                        <b>
+                                            @php
+                                                $kursiMapping = [
+                                                    'DP' => 'Depan (Samping Sopir)',
+                                                    'TL' => 'Tengah Kiri',
+                                                    'TK' => 'Tengah Kanan',
+                                                    'BL' => 'Belakang Kiri',
+                                                    'BK' => 'Belakang Kanan',
+                                                ];
+                                                $nomorKursi = json_decode($penumpang->nomor_kursi, true) ?? [];
+                                            @endphp
+                                            @foreach ($nomorKursi as $kursi)
+                                                {{ $kursiMapping[$kursi] ?? 'Tidak diketahui' }}{{ !$loop->last ? ', ' : '' }}
+                                            @endforeach
+                                        </b>
                                     </small>
                                 </li>
                             @empty
-                                <li class="list-group-item list-group-item-action">
-                                    <strong class="text-center text-danger">Belum ada penumpang</strong>
-                                </li>
+                                <li class="list-group-item text-danger">Tidak ada penumpang saat ini.</li>
                             @endforelse
                         </div>
                     </div>
@@ -223,55 +243,58 @@
 @push('js')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            fetchKursiTersedia();
+            document.querySelectorAll(".open-booking-modal").forEach(button => {
+                button.addEventListener("click", function() {
+                    let idTaksi = this.getAttribute("data-id-taksi"); // Ambil ID Taksi dari tombol
+                    fetchKursiTersedia(idTaksi);
+                });
+            });
         });
 
-        function fetchKursiTersedia() {
-            const jumlahPenumpangInput = document.getElementById("jumlah-penumpang");
-            const kursiContainer = document.getElementById("kursi-container");
-            const kursiWarning = document.getElementById("kursi-warning");
-            const idTaksi = document.querySelector("input[name='id_taksi']").value;
+        function fetchKursiTersedia(idTaksi) {
+            let kursiContainer = document.querySelector(`#booking${idTaksi} #kursi-container`);
+            let kursiWarning = document.querySelector(`#booking${idTaksi} #kursi-warning`);
 
-            if (!kursiContainer || !idTaksi) {
-                console.error("Element tidak ditemukan! Pastikan ID atau Name sudah benar.");
+            if (!kursiContainer) {
+                console.error(`Element kursi-container untuk taksi ${idTaksi} tidak ditemukan!`);
                 return;
             }
 
-            // AJAX untuk mendapatkan kursi yang tersedia
             fetch(`/kursi-tersedia/${idTaksi}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Data kursi tersedia:", data);
+                    kursiContainer.innerHTML = ""; // Kosongkan sebelum menambahkan kursi baru
+                    if (data.message) {
+                        kursiContainer.innerHTML = `<p class="text-danger">${data.message}</p>`;
+                        return;
+                    }
                     if (!data.kursi_tersedia || data.kursi_tersedia.length === 0) {
                         kursiContainer.innerHTML = "<p class='text-danger'>Tidak ada kursi tersedia.</p>";
                         return;
                     }
 
-                    kursiContainer.innerHTML = ""; // Kosongkan sebelum menambahkan kursi baru
                     data.kursi_tersedia.forEach(kursi => {
                         let div = document.createElement("div");
                         div.classList.add("form-check");
                         div.innerHTML = `
-                        <input class="form-check-input kursi-checkbox" type="checkbox" name="nomor_kursi[]" value="${kursi}" id="kursi-${kursi}">
-                        <label class="form-check-label" for="kursi-${kursi}">${kursi}</label>
-                    `;
+        <input class="form-check-input kursi-checkbox" type="checkbox" name="nomor_kursi[]" value="${kursi.kode}" id="kursi-${kursi.kode}">
+        <label class="form-check-label" for="kursi-${kursi.kode}">${kursi.keterangan}</label>
+    `;
                         kursiContainer.appendChild(div);
                     });
-
-                    // Panggil event listener untuk checkbox setelah elemen dibuat
-                    addCheckboxEventListeners();
+                    addCheckboxEventListeners(idTaksi);
                 })
                 .catch(error => console.error("Error fetching kursi:", error));
         }
 
-        function addCheckboxEventListeners() {
-            const jumlahPenumpangInput = document.getElementById("jumlah-penumpang");
-            const kursiWarning = document.getElementById("kursi-warning");
-            const kursiCheckboxes = document.querySelectorAll(".kursi-checkbox");
+        function addCheckboxEventListeners(idTaksi) {
+            let jumlahPenumpangInput = document.querySelector(`#booking${idTaksi} #jumlah-penumpang`);
+            let kursiWarning = document.querySelector(`#booking${idTaksi} #kursi-warning`);
+            let kursiCheckboxes = document.querySelectorAll(`#booking${idTaksi} .kursi-checkbox`);
 
             function updateCheckboxLimit() {
                 let jumlahPenumpang = parseInt(jumlahPenumpangInput.value) || 1;
-                let checkedKursi = document.querySelectorAll(".kursi-checkbox:checked");
+                let checkedKursi = document.querySelectorAll(`#booking${idTaksi} .kursi-checkbox:checked`);
 
                 if (checkedKursi.length > jumlahPenumpang) {
                     kursiWarning.style.display = "block";

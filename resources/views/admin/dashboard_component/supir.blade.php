@@ -158,9 +158,9 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover table-sm">
                                     <thead>
-                                        <tr>
+                                        <tr class="text-center">
                                             <th>#</th>
                                             <th>Nama Pemesan</th>
                                             <th>Penumpang</th>
@@ -176,124 +176,140 @@
                                                 <td>{{ $item->user->name }}<br><small
                                                         class="text-muted">{{ $item->created_at->diffForHumans() }}</small>
                                                 </td>
-                                                <td>{{ $item->jumlah_penumpang }} Orang<br><small>
-                                                        @foreach (App\Models\Penumpang::where('id_pemesanan', $item->id)->get() as $listPenumpang)
-                                                            <span
-                                                                class="p-1 bg-primary mx-1 text-white rounded">{{ $listPenumpang->nama }}</span>
+                                                <td>{{ $item->jumlah_penumpang }} Orang<br>
+                                                    <small class="text-muted">
+                                                        Kursi :
+                                                        @php
+                                                            $kursiMapping = [
+                                                                'DP' => 'Depan (Samping Sopir)',
+                                                                'TL' => 'Tengah Kiri',
+                                                                'TK' => 'Tengah Kanan',
+                                                                'BL' => 'Belakang Kiri',
+                                                                'BK' => 'Belakang Kanan',
+                                                            ];
+                                                            $nomorKursi = json_decode($item->nomor_kursi, true) ?? [];
+                                                        @endphp
+                                                        @foreach ($nomorKursi as $kursi)
+                                                            {{ $kursiMapping[$kursi] ?? 'Tidak diketahui' }}{{ !$loop->last ? ', ' : '' }}
                                                         @endforeach
-                                                    </small></td>
-                                                <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
-                                                    <strong>{{ $item->tujuan->nama_lokasi }}</strong>
-                                                </td>
-                                                <td>
-                                                    <a href="https://wa.me/{{ $item->user->no_hp }}?text=Hai%2C%20{{ $item->user->name }}%0AMobil%20pesanan%20anda%20telah%20sampai%20di%20lokasi%20penjemputan.%0A%0A------------------------------------------------%0Aketerangan%20mobil%20%3A%0Ano.%20Plat%20%3A%20{{ $item->mobil->plat_nomor }}%0AMerek%20Mobil%20%3A%20{{ $item->mobil->merek . ' ' . $item->mobil->warna }}%0Asupir%20%3A%20{{ $item->mobil->supir->name }}"
-                                                        target="__blank" class="btn btn-sm btn-success">Sampai di
-                                                        lokasi
-                                                        penjemputan</a><br>
-                                                    <small class="text-muted">Klik tombol ini jika telah sampai di
-                                                        lokasi penjemputan</small>
-                                                </td>
-
-
-                                                <td>
-                                                    @if ($item->pesanan_selesai == 0)
-                                                        <a href="{{ route('pesanan-selesai', $item->id) }}"
-                                                            class="btn btn-sm btn-primary">Pesanan
-                                                            Selesai</a><br>
-                                                        <small class=" text-muted">Klik tombol ini jika Pesanan telah
-                                                            selesai</small>
-                                                    @else
-                                                        <small class="text-muted">Telah Selesai</small>
-                                                    @endif
-                                                </td>
-                                            </tr>
+                                                    </small><br>
+                                                    <small>
+                                                        @foreach (App\Models\Penumpang::where('id_pemesanan', $item->id)->get() as $listPenumpang)
+                                                            <smalls class="p-1 bg-primary mx-1 text-white rounded">
+                                                                {{ $listPenumpang->nama }}
+                                                    </small>
                                         @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            </div>
-
-            @if ($cek_taksi != 0)
-                <div class="col-md-4 ">
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h4>Detail Mobil</h4>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-hover table-borderless">
-                                <tr>
-                                    <td><strong>No. Plat</strong></td>
-                                    <td>{{ $detail_taksi->plat_nomor }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Merek</strong></td>
-                                    <td>{!! $detail_taksi->merek . ' - ' . $detail_taksi->warna !!}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Jumlah Penumpang</strong></td>
-                                    <td>{{ $detail_taksi->jumlah_penumpang }} Orang</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Tampak Depan</strong></td>
-                                    <td><img src="{{ Storage::url($detail_taksi->foto_depan) }}"
-                                            style="width: 100px;">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Tampak Samping</strong></td>
-                                    <td><img src="{{ Storage::url($detail_taksi->foto_samping) }}"
-                                            style="width: 100px;">
-                                    </td>
-                                </tr>
-                                @if ($detail_taksi->foto_dalam != null)
-                                    <tr>
-                                        <td><strong>Tampak Dalam</strong></td>
-                                        <td><img src="{{ Storage::url($detail_taksi->foto_dalam) }}"
-                                                style="width: 100px;">
+                                        </small></td>
+                                        <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
+                                            <strong>{{ $item->tujuan->nama_lokasi }}</strong>
                                         </td>
-                                    </tr>
-                                @endif
-                            </table>
-                        </div>
+                                        <td>
+                                            <a href="https://wa.me/{{ $item->user->no_hp }}?text=Hai%2C%20{{ $item->user->name }}%0AMobil%20pesanan%20anda%20telah%20sampai%20di%20lokasi%20penjemputan.%0A%0A------------------------------------------------%0Aketerangan%20mobil%20%3A%0Ano.%20Plat%20%3A%20{{ $item->mobil->plat_nomor }}%0AMerek%20Mobil%20%3A%20{{ $item->mobil->merek . ' ' . $item->mobil->warna }}%0Asupir%20%3A%20{{ $item->mobil->supir->name }}"
+                                                target="__blank" class="btn btn-sm btn-success">Sampai di
+                                                lokasi
+                                                penjemputan</a><br>
+                                            <small class="text-muted">Klik tombol ini jika telah sampai di
+                                                lokasi penjemputan</small>
+                                        </td>
+
+
+                                        <td>
+                                            @if ($item->pesanan_selesai == 0)
+                                                <a href="{{ route('pesanan-selesai', $item->id) }}"
+                                                    class="btn btn-sm btn-primary">Pesanan
+                                                    Selesai</a><br>
+                                                <small class=" text-muted">Klik tombol ini jika Pesanan telah
+                                                    selesai</small>
+                                            @else
+                                                <small class="text-muted">Telah Selesai</small>
+                                            @endif
+                                        </td>
+                                        </tr>
+                @endforeach
+                </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+        @endif
+        </div>
+
+        @if ($cek_taksi != 0)
+            <div class="col-md-4 ">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4>Detail Mobil</h4>
                     </div>
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h4>Rute Mobil</h4>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('mobil.add-rute') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id_taksi" value="{{ $detail_taksi->id }}">
-                                <div class="input-group">
-                                    <select class="form-select" name="id_rute"
-                                        aria-label="Example select with button addon" required>
-                                        @foreach (App\Models\Rute::all() as $item)
-                                            <option value="{{ $item->id }}">{{ $item->nama_lokasi }}</option>
-                                        @endforeach
-                                    </select>
-                                    <button class="btn btn-outline-primary" type="submit">Tambah</button>
-                                </div>
-                            </form>
-                            <ul class="list-group mt-2">
-                                @foreach (App\Models\RuteTaksi::where('id_taksi', $detail_taksi->id)->get() as $item)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ $item->rute->nama_lokasi }}
-                                        <form action="{{ route('mobil.delete-rute', $item->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm text-danger delete-button"><i
-                                                    class="bx bx-trash"></i></button>
-                                        </form>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    <div class="card-body">
+                        <table class="table table-hover table-borderless">
+                            <tr>
+                                <td><strong>No. Plat</strong></td>
+                                <td>{{ $detail_taksi->plat_nomor }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Merek</strong></td>
+                                <td>{!! $detail_taksi->merek . ' - ' . $detail_taksi->warna !!}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jumlah Penumpang</strong></td>
+                                <td>{{ $detail_taksi->jumlah_penumpang }} Orang</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tampak Depan</strong></td>
+                                <td><img src="{{ Storage::url($detail_taksi->foto_depan) }}" style="width: 100px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tampak Samping</strong></td>
+                                <td><img src="{{ Storage::url($detail_taksi->foto_samping) }}" style="width: 100px;">
+                                </td>
+                            </tr>
+                            @if ($detail_taksi->foto_dalam != null)
+                                <tr>
+                                    <td><strong>Tampak Dalam</strong></td>
+                                    <td><img src="{{ Storage::url($detail_taksi->foto_dalam) }}"
+                                            style="width: 100px;">
+                                    </td>
+                                </tr>
+                            @endif
+                        </table>
                     </div>
                 </div>
-            @endif
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4>Rute Mobil</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ route('mobil.add-rute') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="id_taksi" value="{{ $detail_taksi->id }}">
+                            <div class="input-group">
+                                <select class="form-select" name="id_rute"
+                                    aria-label="Example select with button addon" required>
+                                    @foreach (App\Models\Rute::all() as $item)
+                                        <option value="{{ $item->id }}">{{ $item->nama_lokasi }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="btn btn-outline-primary" type="submit">Tambah</button>
+                            </div>
+                        </form>
+                        <ul class="list-group mt-2">
+                            @foreach (App\Models\RuteTaksi::where('id_taksi', $detail_taksi->id)->get() as $item)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ $item->rute->nama_lokasi }}
+                                    <form action="{{ route('mobil.delete-rute', $item->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm text-danger delete-button"><i
+                                                class="bx bx-trash"></i></button>
+                                    </form>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
         </div>
         @push('js')
             <script>
