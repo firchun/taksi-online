@@ -22,9 +22,7 @@
 @section('content')
     @php
         $detail_taksi = App\Models\Taksi::where('id_user', Auth::user()->id)->first();
-        $pesanan = App\Models\Pemesanan::where('id_taksi', $detail_taksi->id)
-            ->where('pesanan_selesai', 0)
-            ->get();
+        $pesanan = App\Models\Pemesanan::where('id_taksi', $detail_taksi->id)->where('pesanan_selesai', 0)->get();
     @endphp
     <a href="{{ url('/home') }}" class="btn btn-secondary mb-3"><i class="bx bx-arrow-back"></i> Kembali ke dashboard</a>
     <div class="row">
@@ -146,7 +144,16 @@
                                 .nama_lokasi) {
                                 L.marker([item.asal.latitude, item.asal.longitude], {
                                     draggable: false
-                                }).addTo(map).bindPopup(item.asal.nama_lokasi);
+                                }).addTo(map).bindPopup('Penjemputan : ' + item.asal.nama_lokasi);
+                            } else {
+                                console.warn('Invalid route item:', item);
+                            }
+                            if (item.tujuan && item.tujuan.latitude && item.tujuan.longitude && item
+                                .tujuan
+                                .nama_lokasi) {
+                                L.marker([item.tujuan.latitude, item.tujuan.longitude], {
+                                    draggable: false
+                                }).addTo(map).bindPopup('Tujuan : ' + item.tujuan.nama_lokasi);
                             } else {
                                 console.warn('Invalid route item:', item);
                             }
@@ -169,15 +176,24 @@
                         map.removeControl(routingControl);
                     }
 
-                    // Membuat waypoints dari data API
-                    var waypoints = data.map(function(item) {
-                        if (item.asal && item.asal.latitude && item.asal.longitude) {
-                            return L.latLng(item.asal.latitude, item.asal.longitude);
-                        }
-                    }).filter(Boolean); // Hapus waypoint yang undefined
+                    var waypoints = [];
 
-                    // Tambahkan posisi saat ini sebagai waypoint pertama
-                    waypoints.unshift(currentPosition);
+                    // 1. Tambahkan posisi saat ini sebagai waypoint pertama
+                    waypoints.push(currentPosition);
+
+                    // 2. Tambahkan semua lokasi asal
+                    data.forEach(function(item) {
+                        if (item.asal && item.asal.latitude && item.asal.longitude) {
+                            waypoints.push(L.latLng(item.asal.latitude, item.asal.longitude));
+                        }
+                    });
+
+                    // 3. Tambahkan lokasi tujuan (jika ada)
+                    data.forEach(function(item) {
+                        if (item.tujuan && item.tujuan.latitude && item.tujuan.longitude) {
+                            waypoints.push(L.latLng(item.tujuan.latitude, item.tujuan.longitude));
+                        }
+                    });
 
                     // Tambahkan kontrol rute ke peta
                     routingControl = L.Routing.control({
