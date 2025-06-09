@@ -27,6 +27,9 @@
                     {
                         data: 'status_mobil',
                         name: 'status_mobil'
+                    }, {
+                        data: 'action',
+                        name: 'action'
                     }
                 ]
             });

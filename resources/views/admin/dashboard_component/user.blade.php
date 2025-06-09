@@ -7,7 +7,22 @@
 </div>
 <hr>
 <div class="row justify-content-center">
-    @foreach (App\Models\Taksi::all() as $item)
+    <div class="col-lg-6 col-md-8 col-12">
+        <form method="GET" action="{{ route('home') }}">
+            <div class="input-group mb-3">
+                <input type="search" class="form-control form-control-lg" id="searchTaksi" name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Cari taksi berdasarkan merek, plat nomor, atau supir...">
+                <button class="btn btn-primary" type="submit" id="btnSearchTaksi">
+                    <i class="bx bx-search"></i> Cari
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row justify-content-center">
+
+    @foreach ($taksi as $item)
         @php
             $penumpang = App\Models\Pemesanan::where('id_taksi', $item->id)
                 ->where('pesanan_selesai', 0)
@@ -106,7 +121,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="userModalLabel">Booking Mobil : {{ $item->plat_nomor }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <form action="{{ route('pesanan.store') }}" method="POST">
                         @csrf
@@ -125,30 +141,73 @@
                                         <input type="text" class="form-control" value="{{ Auth::user()->name }}"
                                             readonly>
                                     </div>
-                                    <div class="mb-3">
-                                        <label>Lokasi Asal</label>
-                                        <select name="id_rute_asal" class="form-select" required>
-                                            <option>Pilih Lokasi</option>
-                                            @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
-                                                <option value="{{ $rute->id_rute }}">{{ $rute->rute->nama_lokasi }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label>Lokasi Asal</label>
+                                                <select name="id_rute_asal" class="form-select" required>
+                                                    <option>Pilih Lokasi</option>
+                                                    @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
+                                                        <option value="{{ $rute->id_rute }}">
+                                                            {{ $rute->rute->nama_lokasi }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label>Lokasi Tujuan</label>
+                                                <select name="id_rute_tujuan" class="form-select" required>
+                                                    <option>Pilih Lokasi</option>
+                                                    @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
+                                                        <option value="{{ $rute->id_rute }}">
+                                                            {{ $rute->rute->nama_lokasi }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="mb-3">
+                                                <label>Detail Lokasi Penjemputan</label>
+                                                <textarea name="detail_penjemputan" class="form-control" required></textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label>Lokasi Tujuan</label>
-                                        <select name="id_rute_tujuan" class="form-select" required>
-                                            <option>Pilih Lokasi</option>
-                                            @foreach (App\Models\RuteTaksi::where('id_taksi', $item->id)->get() as $rute)
-                                                <option value="{{ $rute->id_rute }}">{{ $rute->rute->nama_lokasi }}
-                                                </option>
+                                        <label><strong>Pilih Hari:</strong></label>
+                                        <div class="d-flex flex-wrap gap-2 mt-2 justify-content-center">
+                                            @php
+                                                $days = [
+                                                    'Senin',
+                                                    'Selasa',
+                                                    'Rabu',
+                                                    'Kamis',
+                                                    'Jumat',
+                                                    'Sabtu',
+                                                    'Minggu',
+                                                ];
+                                            @endphp
+
+                                            @foreach ($days as $day)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="hari"
+                                                        id="hari-{{ strtolower($day) }}"
+                                                        value="{{ $day }}">
+                                                    <label class="form-check-label"
+                                                        for="hari-{{ strtolower($day) }}">
+                                                        {{ $day }}
+                                                    </label>
+                                                </div>
                                             @endforeach
-                                        </select>
+                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label>Jumlah Penumpang</label>
                                         <input type="number" class="form-control" value="1"
-                                            name="jumlah_penumpang" id="jumlah-penumpang" min="1"
+                                            name="jumlah_penumpang" id="jumlah-penumpang-{{ $item->id }}"
+                                            min="1"
                                             max="{{ App\Models\Taksi::find($item->id)->jumlah_penumpang - $penumpang }}"
                                             required>
                                     </div>
@@ -164,19 +223,12 @@
                                             sesuai jumlah penumpang!</small>
                                     </div>
                                     <!-- Daftar Nama Penumpang -->
-                                    <div class="mb-3 p-3 border border-primary rounded">
+                                    <div class="mb-3 p-3 border border-primary rounded"
+                                        id="daftar-penumpang-{{ $item->id }}">
                                         <label>Daftar Penumpang</label>
-                                        <div id="penumpang-list">
-                                            <div class="input-group mb-2">
-                                                <input type="text" name="nama[]" class="form-control"
-                                                    placeholder="Nama Penumpang">
-                                                <button type="button"
-                                                    class="btn btn-outline-danger remove-penumpang">Hapus</button>
-                                            </div>
+                                        <div id="penumpang-list-{{ $item->id }}">
+                                            {{-- Input penumpang akan di-generate via JS --}}
                                         </div>
-                                        <button type="button" id="add-penumpang"
-                                            class="btn btn-outline-primary">Tambah
-                                            Penumpang</button>
                                     </div>
                                 </div>
                             </div>
@@ -255,6 +307,20 @@
 @endpush
 @push('js')
     <script>
+        $(document).ready(function() {
+            @foreach ($taksi as $item)
+                $('#jumlah-penumpang-{{ $item->id }}').on('input', function() {
+                    let jumlah = parseInt($(this).val());
+                    if (jumlah > 1) {
+                        $('#daftar-penumpang-{{ $item->id }}').show();
+                    } else {
+                        $('#daftar-penumpang-{{ $item->id }}').hide();
+                    }
+                }).trigger('input'); // trigger saat load
+            @endforeach
+        });
+    </script>
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll(".open-booking-modal").forEach(button => {
                 button.addEventListener("click", function() {
@@ -290,9 +356,9 @@
                         let div = document.createElement("div");
                         div.classList.add("form-check");
                         div.innerHTML = `
-        <input class="form-check-input kursi-checkbox" type="checkbox" name="nomor_kursi[]" value="${kursi.kode}" id="kursi-${kursi.kode}">
-        <label class="form-check-label" for="kursi-${kursi.kode}">${kursi.keterangan}</label>
-    `;
+                            <input class="form-check-input kursi-checkbox" type="checkbox" name="nomor_kursi[]" value="${kursi.kode}" id="kursi-${kursi.kode}">
+                            <label class="form-check-label" for="kursi-${kursi.kode}">${kursi.keterangan}</label>
+                        `;
                         kursiContainer.appendChild(div);
                     });
                     addCheckboxEventListeners(idTaksi);
@@ -300,35 +366,37 @@
                 .catch(error => console.error("Error fetching kursi:", error));
         }
 
-        function addCheckboxEventListeners(idTaksi) {
-            let jumlahPenumpangInput = document.querySelector(`#booking${idTaksi} #jumlah-penumpang`);
-            let kursiWarning = document.querySelector(`#booking${idTaksi} #kursi-warning`);
-            let kursiCheckboxes = document.querySelectorAll(`#booking${idTaksi} .kursi-checkbox`);
+        document.addEventListener('DOMContentLoaded', function() {
+            @foreach ($taksi as $item)
+                (function() {
+                    const jumlahInput = document.getElementById('jumlah-penumpang-{{ $item->id }}');
+                    const penumpangList = document.getElementById('penumpang-list-{{ $item->id }}');
 
-            function updateCheckboxLimit() {
-                let jumlahPenumpang = parseInt(jumlahPenumpangInput.value) || 1;
-                let checkedKursi = document.querySelectorAll(`#booking${idTaksi} .kursi-checkbox:checked`);
+                    function renderInputs() {
+                        const jumlah = parseInt(jumlahInput.value);
+                        const jumlahField = Math.max(jumlah - 1, 0);
 
-                if (checkedKursi.length > jumlahPenumpang) {
-                    kursiWarning.style.display = "block";
-                } else {
-                    kursiWarning.style.display = "none";
-                }
+                        // Kosongkan dulu
+                        penumpangList.innerHTML = '';
 
-                kursiCheckboxes.forEach(checkbox => {
-                    if (checkedKursi.length >= jumlahPenumpang && !checkbox.checked) {
-                        checkbox.disabled = true;
-                    } else {
-                        checkbox.disabled = false;
+                        for (let i = 1; i <= jumlahField; i++) {
+                            const div = document.createElement('div');
+                            div.classList.add('input-group', 'mb-2');
+                            div.innerHTML = `
+                        <input type="text" name="nama[{{ $item->id }}][]" class="form-control" placeholder="Nama Penumpang ${i}">
+                    `;
+                            penumpangList.appendChild(div);
+                        }
                     }
-                });
-            }
 
-            jumlahPenumpangInput.addEventListener("input", updateCheckboxLimit);
-            kursiCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener("change", updateCheckboxLimit);
-            });
-        }
+                    // Jalankan saat pertama kali halaman dimuat
+                    renderInputs();
+
+                    // Jalankan saat input jumlah berubah
+                    jumlahInput.addEventListener('input', renderInputs);
+                })();
+            @endforeach
+        });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

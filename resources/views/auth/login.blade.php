@@ -61,7 +61,11 @@
                 <!-- /Logo -->
                 <h4 class="mb-2">Welcome 👋</h4>
                 <p class="mb-4">Silahkan login terlebih dahulu</p>
-
+                @if (session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>

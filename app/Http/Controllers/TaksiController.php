@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Rute;
 use App\Models\RuteTaksi;
 use App\Models\Taksi;
+use GuzzleHttp\RetryMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -34,11 +35,19 @@ class TaksiController extends Controller
             ->addColumn('mobil', function ($mobil) {
                 return '<strong>' . $mobil->plat_nomor . '</strong><br>Merek Mobil : ' . $mobil->merek . '<br>Warna Mobil : ' . $mobil->warna;
             })
+            ->addColumn('action', function ($mobil) {
+                if ($mobil->verified == false) {
+
+                    return '<div class="d-flex form-group"> <a href="' . route('mobil-verifikasi', $mobil->id) . '" class="btn btn-warning mx-2 btn-sm">Verifikasi</a><br><a href="' . route('mobil-tolak', $mobil->id) . '" class="btn btn-danger btn-sm">Tolak</a></div>';
+                } else {
+                    return '<span class="text-success">Terverifikasi</span>';
+                }
+            })
             ->addColumn('status_mobil', function ($mobil) {
                 $status =  $mobil->aktif == 1 ? '<span class="text-success">Online</span>' : '<span class="text-muted">Offline</span>';
                 return '<strong>' . $status . '</strong><br>' . $mobil->status;
             })
-            ->rawColumns(['supir', 'foto', 'mobil', 'status_mobil'])
+            ->rawColumns(['supir', 'foto', 'mobil', 'status_mobil', 'action'])
             ->make(true);
     }
     public function store(Request $request)
@@ -163,6 +172,21 @@ class TaksiController extends Controller
         }
         $taksi->save();
         session()->flash('success', 'Berhasil Update status');
+        return back();
+    }
+    public function verifikasi($id)
+    {
+        $taksi = Taksi::find($id);
+        $taksi->verified = true;
+        $taksi->save();
+        session()->flash('success', 'Berhasil verifikasi');
+        return back();
+    }
+    public function tolak($id)
+    {
+        $taksi = Taksi::find($id);
+        $taksi->delete();
+        session()->flash('success', 'Berhasil Menolak');
         return back();
     }
 }

@@ -29,6 +29,8 @@ class PemesananController extends Controller
             'id_rute_asal' => $request->input('id_rute_asal'),
             'id_rute_tujuan' => $request->input('id_rute_tujuan'),
             'jumlah_penumpang' => $request->input('jumlah_penumpang'),
+            'detail_penjemputan' => $request->input('detail_penjemputan'),
+            'hari' => $request->input('hari'),
             'nomor_kursi' => json_encode($request->nomor_kursi),
         ];
 
@@ -192,5 +194,14 @@ class PemesananController extends Controller
             'kursi_tersedia' => $kursiDenganKeterangan,
             'sisa_kursi' => count($kursiTersedia) // Tambahkan info sisa kursi
         ]);
+    }
+    public function tolakPesanan($id)
+    {
+        $pemesanan = Pemesanan::find($id);
+        if (!$pemesanan) {
+            return back()->with('error', 'Pesanan tidak ditemukan');
+        }
+        $pemesanan->delete();
+        return back()->with('success', 'Pesanan berhasil ditolak');
     }
 }

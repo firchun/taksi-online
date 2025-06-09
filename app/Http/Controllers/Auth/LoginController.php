@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -42,4 +44,17 @@ class LoginController extends Controller
         session()->flash('success', 'Anda berhasil login!');
         return $this->redirectTo;
     }
+    // protected function authenticated(Request $request, $user)
+    // {
+    //     if (!$user->verified) {
+    //         Auth::logout();
+
+    //         return redirect()->back()
+    //             ->with('error', 'Akun Anda belum diverifikasi.');
+    //     }
+
+
+    //     session()->flash('success', 'Anda berhasil login!');
+    //     return redirect()->intended($this->redirectTo ?? '/home');
+    // }
 }

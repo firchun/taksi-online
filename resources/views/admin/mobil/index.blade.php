@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="card-datatable table-responsive">
-                    <table id="datatable-mobil" class="table table-hover table-bordered display">
+                    <table id="datatable-mobil" class="table table-hover table-bordered display table-sm">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -30,6 +30,7 @@
                                 <th>Sopir</th>
                                 <th>Mobil</th>
                                 <th>Status</th>
+                                <th>Verifikasi</th>
                             </tr>
                         </thead>
 
@@ -40,6 +41,7 @@
                                 <th>Sopir</th>
                                 <th>Mobil</th>
                                 <th>Status</th>
+                                <th>Verifikasi</th>
                             </tr>
                         </tfoot>
                     </table>

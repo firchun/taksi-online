@@ -1,5 +1,5 @@
         @php
-            $taksi = App\Models\Taksi::where('id_user', Auth::user()->id);
+            // $taksi = App\Models\Taksi::where('id_user', Auth::user()->id);
             $cek_taksi = $taksi->count();
             $detail_taksi = $taksi->first();
             $pesanan = App\Models\Pemesanan::with(['user', 'mobil'])
@@ -30,56 +30,67 @@
                     Ulasan
                 </a>
             </div>
-            @if ($detail_taksi->status == 'Full')
-                <div class="alert alert-warning alert-dismissible" role="alert">
-                    Penumpang anda telah penuh dan menunggu penjemputan, segera lakukan penjemputan
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                    </button>
-                </div>
-            @elseif ($detail_taksi->status == 'Tersedia')
-                <div class="card mb-3">
-                    <h5 class="card-header">
-                        @if ($detail_taksi->aktif == 0)
-                            Mulai untuk Online?
-                        @else
-                            Anda sedang Online
-                        @endif
-                    </h5>
-                    <div class="card-body">
-                        <div class="mb-3 col-12 mb-0">
-                            @if ($detail_taksi->aktif == 0)
-                                <div class="alert alert-warning">
-                                    <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin memulai mencari pelanggan ?
-                                    </h6>
-                                    <p class="mb-0">Silahkan klik tombol dibawah untuk mencari pelanggan anda. dengan
-                                        menekan
-                                        tombol di bawah, status anda akan online pada aplikasi dan siap untuk mencari
-                                        pelanggan
-                                    </p>
-                                </div>
-                            @else
-                                <div class="alert alert-primary">
-                                    <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin berhenti untuk mencari
-                                        pelanggan?
-                                    </h6>
-                                    <p class="mb-0">Silahkan klik tombol dibawah untuk mengubah ke offline. dengan
-                                        menekan
-                                        tombol di bawah, status anda akan offline pada aplikasi dan berhenti untuk
-                                        menerima
-                                        pelanggan
-                                    </p>
-                                </div>
-                            @endif
-                        </div>
-                        <form action="{{ route('mobil.status', $detail_taksi->id) }}" method="POST">
-                            @csrf
-                            @if ($detail_taksi->aktif == 0)
-                                <button type="submit" class="btn btn-success ">Nyalakan status Online</button>
-                            @else
-                                <button type="submit" class="btn btn-warning">Matikan status Online</button>
-                            @endif
-                        </form>
+            @if ($detail_taksi->verified == true)
+                @if ($detail_taksi->status == 'Full')
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        Penumpang anda telah penuh dan menunggu penjemputan, segera lakukan penjemputan
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        </button>
                     </div>
+                @elseif ($detail_taksi->status == 'Tersedia')
+                    <div class="card mb-3">
+                        <h5 class="card-header">
+                            @if ($detail_taksi->aktif == 0)
+                                Mulai untuk Online?
+                            @else
+                                Anda sedang Online
+                            @endif
+                        </h5>
+                        <div class="card-body">
+                            <div class="mb-3 col-12 mb-0">
+                                @if ($detail_taksi->aktif == 0)
+                                    <div class="alert alert-warning">
+                                        <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin memulai mencari
+                                            pelanggan ?
+                                        </h6>
+                                        <p class="mb-0">Silahkan klik tombol dibawah untuk mencari pelanggan anda.
+                                            dengan
+                                            menekan
+                                            tombol di bawah, status anda akan online pada aplikasi dan siap untuk
+                                            mencari
+                                            pelanggan
+                                        </p>
+                                    </div>
+                                @else
+                                    <div class="alert alert-primary">
+                                        <h6 class="alert-heading fw-bold mb-1">Apakah anda ingin berhenti untuk mencari
+                                            pelanggan?
+                                        </h6>
+                                        <p class="mb-0">Silahkan klik tombol dibawah untuk mengubah ke offline. dengan
+                                            menekan
+                                            tombol di bawah, status anda akan offline pada aplikasi dan berhenti untuk
+                                            menerima
+                                            pelanggan
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                            <form action="{{ route('mobil.status', $detail_taksi->id) }}" method="POST">
+                                @csrf
+                                @if ($detail_taksi->aktif == 0)
+                                    <button type="submit" class="btn btn-success ">Nyalakan status Online</button>
+                                @else
+                                    <button type="submit" class="btn btn-warning">Matikan status Online</button>
+                                @endif
+                            </form>
+                        </div>
+                    </div>
+                @endif
+            @else
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    Mobil anda belum diverifikasi, silahkan tunggu admin untuk memverifikasi mobil anda
+                    {{-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    </button> --}}
                 </div>
             @endif
         @endif
@@ -152,164 +163,181 @@
                         </form>
                     </div>
                 @else
+                    @if ($detail_taksi->verified == true)
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h4>Pemesanan Mobil</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>#</th>
+                                                <th>Nama Pemesan</th>
+                                                <th>Penumpang</th>
+                                                <th>Rute</th>
+                                                <th>Sampai</th>
+                                                <th>Selesai</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($pesanan as $item)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $item->user->name }}<br><small
+                                                            class="text-muted">{{ $item->created_at->diffForHumans() }}</small>
+                                                    </td>
+                                                    <td>{{ $item->jumlah_penumpang }} Orang<br>
+                                                        <small class="text-muted">
+                                                            Kursi :
+                                                            @php
+                                                                $kursiMapping = [
+                                                                    'DP' => '1. Depan (Samping Sopir)',
+                                                                    'TL' => '2. Tengah Kiri',
+                                                                    'BS' => '3. Bench Seat',
+                                                                    'TK' => '4. Tengah Kanan',
+                                                                    'BL' => '5. Belakang Kiri',
+                                                                    'BT' => '6. Belakang Tengah',
+                                                                    'BK' => '7. Belakang Kanan',
+                                                                ];
+                                                                $nomorKursi =
+                                                                    json_decode($item->nomor_kursi, true) ?? [];
+                                                            @endphp
+                                                            @foreach ($nomorKursi as $kursi)
+                                                                {{ $kursiMapping[$kursi] ?? 'Tidak diketahui' }}{{ !$loop->last ? ', ' : '' }}
+                                                            @endforeach
+                                                        </small><br>
+                                                        <small>
+                                                            @foreach (App\Models\Penumpang::where('id_pemesanan', $item->id)->get() as $listPenumpang)
+                                                                <small class="p-1 bg-primary mx-1 text-white rounded">
+                                                                    {{ $listPenumpang->nama }}
+                                                                </small>
+                                                            @endforeach
+                                                        </small>
+                                                    </td>
+                                                    <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
+                                                        <strong>{{ $item->tujuan->nama_lokasi }}</strong>
+                                                    </td>
+                                                    <td>
+                                                        <a href="https://wa.me/{{ $item->user->no_hp }}?text=Hai%2C%20{{ $item->user->name }}%0AMobil%20pesanan%20anda%20telah%20sampai%20di%20lokasi%20penjemputan.%0A%0A------------------------------------------------%0Aketerangan%20mobil%20%3A%0Ano.%20Plat%20%3A%20{{ $item->mobil->plat_nomor }}%0AMerek%20Mobil%20%3A%20{{ $item->mobil->merek . ' ' . $item->mobil->warna }}%0Asupir%20%3A%20{{ $item->mobil->supir->name }}"
+                                                            target="__blank" class="btn btn-sm btn-success">Sampai di
+                                                            lokasi
+                                                            penjemputan</a><br>
+                                                        <small class="text-muted">Klik tombol ini jika telah sampai di
+                                                            lokasi penjemputan</small>
+                                                    </td>
+                                                    <td>
+                                                        @if ($item->pesanan_selesai == 0)
+                                                            <div class="d-flex flex-column w-100">
+                                                                <a href="{{ route('pesanan-selesai', $item->id) }}"
+                                                                    class="btn btn-sm btn-primary mb-2 w-100">Pesanan
+                                                                    Selesai</a>
+                                                                <a href="{{ route('tolak-pesanan', $item->id) }}"
+                                                                    class="btn btn-sm btn-danger w-100">Tolak</a>
+                                                            </div>
+                                                            <br>
+                                                            <small class=" text-muted">Klik tombol ini jika Pesanan
+                                                                telah
+                                                                selesai</small>
+                                                        @else
+                                                            <small class="text-muted">Telah Selesai</small>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6" class="text-center">Tidak ada pemesanan saat
+                                                        ini
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+            </div>
+            @if ($cek_taksi != 0 && $detail_taksi->verified == true)
+                <div class="col-md-4 ">
                     <div class="card mb-3">
                         <div class="card-header">
-                            <h4>Pemesanan Mobil</h4>
+                            <h4>Detail Mobil</h4>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-sm">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th>#</th>
-                                            <th>Nama Pemesan</th>
-                                            <th>Penumpang</th>
-                                            <th>Rute</th>
-                                            <th>Sampai</th>
-                                            <th>Selesai</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($pesanan as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->user->name }}<br><small
-                                                        class="text-muted">{{ $item->created_at->diffForHumans() }}</small>
-                                                </td>
-                                                <td>{{ $item->jumlah_penumpang }} Orang<br>
-                                                    <small class="text-muted">
-                                                        Kursi :
-                                                        @php
-                                                            $kursiMapping = [
-                                                                'DP' => '1. Depan (Samping Sopir)',
-                                                                'TL' => '2. Tengah Kiri',
-                                                                'BS' => '3. Bench Seat',
-                                                                'TK' => '4. Tengah Kanan',
-                                                                'BL' => '5. Belakang Kiri',
-                                                                'BT' => '6. Belakang Tengah',
-                                                                'BK' => '7. Belakang Kanan',
-                                                            ];
-                                                            $nomorKursi = json_decode($item->nomor_kursi, true) ?? [];
-                                                        @endphp
-                                                        @foreach ($nomorKursi as $kursi)
-                                                            {{ $kursiMapping[$kursi] ?? 'Tidak diketahui' }}{{ !$loop->last ? ', ' : '' }}
-                                                        @endforeach
-                                                    </small><br>
-                                                    <small>
-                                                        @foreach (App\Models\Penumpang::where('id_pemesanan', $item->id)->get() as $listPenumpang)
-                                                            <smalls class="p-1 bg-primary mx-1 text-white rounded">
-                                                                {{ $listPenumpang->nama }}
-                                                    </small>
-                                        @endforeach
-                                        </small></td>
-                                        <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
-                                            <strong>{{ $item->tujuan->nama_lokasi }}</strong>
-                                        </td>
-                                        <td>
-                                            <a href="https://wa.me/{{ $item->user->no_hp }}?text=Hai%2C%20{{ $item->user->name }}%0AMobil%20pesanan%20anda%20telah%20sampai%20di%20lokasi%20penjemputan.%0A%0A------------------------------------------------%0Aketerangan%20mobil%20%3A%0Ano.%20Plat%20%3A%20{{ $item->mobil->plat_nomor }}%0AMerek%20Mobil%20%3A%20{{ $item->mobil->merek . ' ' . $item->mobil->warna }}%0Asupir%20%3A%20{{ $item->mobil->supir->name }}"
-                                                target="__blank" class="btn btn-sm btn-success">Sampai di
-                                                lokasi
-                                                penjemputan</a><br>
-                                            <small class="text-muted">Klik tombol ini jika telah sampai di
-                                                lokasi penjemputan</small>
-                                        </td>
-                                        <td>
-                                            @if ($item->pesanan_selesai == 0)
-                                                <a href="{{ route('pesanan-selesai', $item->id) }}"
-                                                    class="btn btn-sm btn-primary">Pesanan
-                                                    Selesai</a><br>
-                                                <small class=" text-muted">Klik tombol ini jika Pesanan telah
-                                                    selesai</small>
-                                            @else
-                                                <small class="text-muted">Telah Selesai</small>
-                                            @endif
-                                        </td>
-                                        </tr>
-                @endforeach
-                </tbody>
-                </table>
-            </div>
-        </div>
-        </div>
-        @endif
-        </div>
-
-        @if ($cek_taksi != 0)
-            <div class="col-md-4 ">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h4>Detail Mobil</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-hover table-borderless">
-                            <tr>
-                                <td><strong>No. Plat</strong></td>
-                                <td>{{ $detail_taksi->plat_nomor }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Merek</strong></td>
-                                <td>{!! $detail_taksi->merek . ' - ' . $detail_taksi->warna !!}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Jumlah Penumpang</strong></td>
-                                <td>{{ $detail_taksi->jumlah_penumpang }} Orang</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tampak Depan</strong></td>
-                                <td><img src="{{ Storage::url($detail_taksi->foto_depan) }}" style="width: 100px;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tampak Samping</strong></td>
-                                <td><img src="{{ Storage::url($detail_taksi->foto_samping) }}" style="width: 100px;">
-                                </td>
-                            </tr>
-                            @if ($detail_taksi->foto_dalam != null)
+                            <table class="table table-hover table-borderless">
                                 <tr>
-                                    <td><strong>Tampak Dalam</strong></td>
-                                    <td><img src="{{ Storage::url($detail_taksi->foto_dalam) }}"
+                                    <td><strong>No. Plat</strong></td>
+                                    <td>{{ $detail_taksi->plat_nomor }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Merek</strong></td>
+                                    <td>{!! $detail_taksi->merek . ' - ' . $detail_taksi->warna !!}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Jumlah Penumpang</strong></td>
+                                    <td>{{ $detail_taksi->jumlah_penumpang }} Orang</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tampak Depan</strong></td>
+                                    <td><img src="{{ Storage::url($detail_taksi->foto_depan) }}"
                                             style="width: 100px;">
                                     </td>
                                 </tr>
-                            @endif
-                        </table>
+                                <tr>
+                                    <td><strong>Tampak Samping</strong></td>
+                                    <td><img src="{{ Storage::url($detail_taksi->foto_samping) }}"
+                                            style="width: 100px;">
+                                    </td>
+                                </tr>
+                                @if ($detail_taksi->foto_dalam != null)
+                                    <tr>
+                                        <td><strong>Tampak Dalam</strong></td>
+                                        <td><img src="{{ Storage::url($detail_taksi->foto_dalam) }}"
+                                                style="width: 100px;">
+                                        </td>
+                                    </tr>
+                                @endif
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h4>Rute Mobil</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('mobil.add-rute') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="id_taksi" value="{{ $detail_taksi->id }}">
+                                <div class="input-group">
+                                    <select class="form-select" name="id_rute"
+                                        aria-label="Example select with button addon" required>
+                                        @foreach (App\Models\Rute::all() as $item)
+                                            <option value="{{ $item->id }}">{{ $item->nama_lokasi }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button class="btn btn-outline-primary" type="submit">Tambah</button>
+                                </div>
+                            </form>
+                            <ul class="list-group mt-2">
+                                @foreach (App\Models\RuteTaksi::where('id_taksi', $detail_taksi->id)->get() as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ $item->rute->nama_lokasi }}
+                                        <form action="{{ route('mobil.delete-rute', $item->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm text-danger delete-button"><i
+                                                    class="bx bx-trash"></i></button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h4>Rute Mobil</h4>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('mobil.add-rute') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="id_taksi" value="{{ $detail_taksi->id }}">
-                            <div class="input-group">
-                                <select class="form-select" name="id_rute"
-                                    aria-label="Example select with button addon" required>
-                                    @foreach (App\Models\Rute::all() as $item)
-                                        <option value="{{ $item->id }}">{{ $item->nama_lokasi }}</option>
-                                    @endforeach
-                                </select>
-                                <button class="btn btn-outline-primary" type="submit">Tambah</button>
-                            </div>
-                        </form>
-                        <ul class="list-group mt-2">
-                            @foreach (App\Models\RuteTaksi::where('id_taksi', $detail_taksi->id)->get() as $item)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $item->rute->nama_lokasi }}
-                                    <form action="{{ route('mobil.delete-rute', $item->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm text-danger delete-button"><i
-                                                class="bx bx-trash"></i></button>
-                                    </form>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        @endif
+            @endif
         </div>
         @push('js')
             <script>

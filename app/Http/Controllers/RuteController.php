@@ -24,11 +24,11 @@ class RuteController extends Controller
     }
     public function rute_penjemputan($id_taksi)
     {
-        $pesanan = Pemesanan::with(['asal','tujuan'])
-            ->select(['id_rute_asal','id_rute_tujuan'])
+        $pesanan = Pemesanan::with(['asal', 'tujuan'])
+            ->select(['id_rute_asal', 'id_rute_tujuan'])
             ->where('id_taksi', $id_taksi)
             ->where('pesanan_selesai', 0)
-            ->groupBy('id_rute_asal','id_rute_tujuan')
+            ->groupBy('id_rute_asal', 'id_rute_tujuan')
             ->get();
 
         return response()->json($pesanan);

@@ -57,6 +57,7 @@ Route::middleware(['auth:web', 'role:Supir'])->group(function () {
     });
     //rute
     Route::get('/pesanan-selesai/{id}', [PemesananController::class, 'pesananSelesai'])->name('pesanan-selesai');
+    Route::get('/tolak-pesanan/{id}', [PemesananController::class, 'tolakPesanan'])->name('tolak-pesanan');
     Route::get('/rute-penjemputan/{id_taksi}', [RuteController::class, 'rute_penjemputan'])->name('rute-penjemputan');
     //taksi
     Route::post('/mobil/store', [TaksiController::class, 'store'])->name('mobil.store');
@@ -68,6 +69,9 @@ Route::middleware(['auth:web', 'role:Admin,Supir'])->group(function () {
     Route::get('/ulasan', [UlasanController::class, 'index'])->name('ulasan');
 });
 Route::middleware(['auth:web', 'role:Admin'])->group(function () {
+    // verifikasi taksi
+    Route::get('/mobil-verifikasi/{id}', [TaksiController::class, 'verifikasi'])->name('mobil-verifikasi');
+    Route::get('/mobil-tolak/{id}', [TaksiController::class, 'tolak'])->name('mobil-tolak');
     //mobil managemen
     Route::get('/mobil', [TaksiController::class, 'index'])->name('mobil');
     Route::get('/mobil-datatable', [TaksiController::class, 'getMobilDataTable']);
