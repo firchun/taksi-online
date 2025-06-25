@@ -5,6 +5,14 @@
             $pesanan = App\Models\Pemesanan::with(['user', 'mobil'])
                 ->where('id_taksi', $taksi->first()->id ?? null)
                 ->where('pesanan_selesai', 0)
+                ->where(function ($query) {
+                    $query->whereDate('tanggal_pemesanan', now()->format('Y-m-d'))->orWhereNull('tanggal_pemesanan');
+                })
+                ->get();
+            $pesananLater = App\Models\Pemesanan::with(['user', 'mobil'])
+                ->where('id_taksi', $taksi->first()->id ?? null)
+                ->where('pesanan_selesai', 0)
+                ->where('tanggal_pemesanan', '>=', now()->format('Y-m-d'))
                 ->get();
             $cek_full = false;
             if ($pesanan) {
@@ -186,7 +194,101 @@
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $item->user->name }}<br><small
-                                                            class="text-muted">{{ $item->created_at->diffForHumans() }}</small>
+                                                            class="text-muted">{{ $item->tanggal_pemesanan ?? 'Hari ini' }}</small>
+                                                    </td>
+                                                    <td>{{ $item->jumlah_penumpang }} Orang<br>
+                                                        <small class="text-muted">
+                                                            Kursi :
+                                                            @php
+                                                                $kursiMapping = [
+                                                                    'DP' => '1. Depan (Samping Sopir)',
+                                                                    'TL' => '2. Tengah Kiri',
+                                                                    'BS' => '3. Bench Seat',
+                                                                    'TK' => '4. Tengah Kanan',
+                                                                    'BL' => '5. Belakang Kiri',
+                                                                    'BT' => '6. Belakang Tengah',
+                                                                    'BK' => '7. Belakang Kanan',
+                                                                ];
+                                                                $nomorKursi =
+                                                                    json_decode($item->nomor_kursi, true) ?? [];
+                                                            @endphp
+                                                            @foreach ($nomorKursi as $kursi)
+                                                                {{ $kursiMapping[$kursi] ?? 'Tidak diketahui' }}{{ !$loop->last ? ', ' : '' }}
+                                                            @endforeach
+                                                        </small><br>
+                                                        <small>
+                                                            @foreach (App\Models\Penumpang::where('id_pemesanan', $item->id)->get() as $listPenumpang)
+                                                                <small class="p-1 bg-primary mx-1 text-white rounded">
+                                                                    {{ $listPenumpang->nama }}
+                                                                </small>
+                                                            @endforeach
+                                                        </small>
+                                                    </td>
+                                                    <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
+                                                        <strong>{{ $item->tujuan->nama_lokasi }}</strong>
+                                                    </td>
+                                                    <td>
+                                                        <a href="https://wa.me/{{ $item->user->no_hp }}?text=Hai%2C%20{{ $item->user->name }}%0AMobil%20pesanan%20anda%20telah%20sampai%20di%20lokasi%20penjemputan.%0A%0A------------------------------------------------%0Aketerangan%20mobil%20%3A%0Ano.%20Plat%20%3A%20{{ $item->mobil->plat_nomor }}%0AMerek%20Mobil%20%3A%20{{ $item->mobil->merek . ' ' . $item->mobil->warna }}%0Asupir%20%3A%20{{ $item->mobil->supir->name }}"
+                                                            target="__blank" class="btn btn-sm btn-success">Sampai di
+                                                            lokasi
+                                                            penjemputan</a><br>
+                                                        <small class="text-muted">Klik tombol ini jika telah sampai di
+                                                            lokasi penjemputan</small>
+                                                    </td>
+                                                    <td>
+                                                        @if ($item->pesanan_selesai == 0)
+                                                            <div class="d-flex flex-column w-100">
+                                                                <a href="{{ route('pesanan-selesai', $item->id) }}"
+                                                                    class="btn btn-sm btn-primary mb-2 w-100">Pesanan
+                                                                    Selesai</a>
+                                                                <a href="{{ route('tolak-pesanan', $item->id) }}"
+                                                                    class="btn btn-sm btn-danger w-100">Tolak</a>
+                                                            </div>
+                                                            <br>
+                                                            <small class=" text-muted">Klik tombol ini jika Pesanan
+                                                                telah
+                                                                selesai</small>
+                                                        @else
+                                                            <small class="text-muted">Telah Selesai</small>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6" class="text-center">Tidak ada pemesanan saat
+                                                        ini
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h4>Pemesanan Mobil Selanjutnya</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>#</th>
+                                                <th>Nama Pemesan</th>
+                                                <th>Penumpang</th>
+                                                <th>Rute</th>
+                                                <th>Sampai</th>
+                                                <th>Selesai</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($pesananLater as $item)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $item->user->name }}<br><small
+                                                            class="text-muted">{{ $item->tanggal_pemesanan }} -
+                                                            {{ $item->hari }}</small>
                                                     </td>
                                                     <td>{{ $item->jumlah_penumpang }} Orang<br>
                                                         <small class="text-muted">

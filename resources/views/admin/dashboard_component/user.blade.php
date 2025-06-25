@@ -1,3 +1,4 @@
+@include('layouts.backend.alert')
 <div class="text-center mb-3">
     <h4>Selamat datang kembali <span class="text-primary">{{ Auth::user()->name }}</span></h4>
     <div class="d-flex justify-content-center">
@@ -176,29 +177,35 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label><strong>Pilih Hari:</strong></label>
+                                        <label><strong>Pilih Tanggal (7 Hari ke Depan):</strong></label>
+                                        <input type="text" id="tanggal" name="tanggal_pemesanan"
+                                            class="form-control" placeholder="Pilih Tanggal">
+                                    </div>
+                                    <div class="mb-3">
                                         <div class="d-flex flex-wrap gap-2 mt-2 justify-content-center">
                                             @php
                                                 $days = [
+                                                    'Minggu',
                                                     'Senin',
                                                     'Selasa',
                                                     'Rabu',
                                                     'Kamis',
                                                     'Jumat',
                                                     'Sabtu',
-                                                    'Minggu',
                                                 ];
                                             @endphp
 
+                                            <!-- Hidden input yang akan dikirim ke server -->
+                                            <input type="hidden" name="hari" id="hari">
+
+                                            <!-- Radio yang hanya untuk tampilan (readonly) -->
                                             @foreach ($days as $day)
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="hari"
-                                                        id="hari-{{ strtolower($day) }}"
-                                                        value="{{ $day }}">
+                                                    <input class="form-check-input" type="radio"
+                                                        id="hari-{{ strtolower($day) }}" value="{{ $day }}"
+                                                        disabled>
                                                     <label class="form-check-label"
-                                                        for="hari-{{ strtolower($day) }}">
-                                                        {{ $day }}
-                                                    </label>
+                                                        for="hari-{{ strtolower($day) }}">{{ $day }}</label>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -304,8 +311,35 @@
             opacity: 1 !important;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 @endpush
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        flatpickr("#tanggal", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            maxDate: new Date().fp_incr(6), // 6 hari ke depan
+            disableMobile: true,
+        });
+    </script>
+    <script>
+        const tanggalInput = document.getElementById('tanggal');
+        const hariHidden = document.getElementById('hari');
+
+        tanggalInput.addEventListener('change', function() {
+            const tanggal = new Date(this.value);
+            const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const hari = hariIndo[tanggal.getDay()];
+            hariHidden.value = hari;
+
+            // (Opsional) Tandai radio agar aktif sesuai hari
+            document.querySelectorAll('input[type="radio"]').forEach(el => {
+                el.checked = (el.value === hari);
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             @foreach ($taksi as $item)

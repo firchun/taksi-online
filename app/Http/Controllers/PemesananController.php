@@ -17,9 +17,11 @@ class PemesananController extends Controller
             'id_taksi' => 'required|max:255',
             'id_rute_asal' => 'required|max:255',
             'id_rute_tujuan' => 'required|max:255',
+            'tanggal_pemesanan' => 'required',
+            'hari' => 'required',
             'jumlah_penumpang' => 'required|integer|min:1',
             'nama' => 'nullable|array|min:1', // Nama boleh kosong
-            'nomor_kursi.*' => 'string|in:DP,TL,TK,BL,BK', // Validasi kursi yang tersedia
+            'nomor_kursi.*' => 'string|in:DP,TL,TK,BL,BK,BS', // Validasi kursi yang tersedia
             'nama.*' => 'nullable|string|max:255',
         ]);
 
@@ -31,6 +33,7 @@ class PemesananController extends Controller
             'jumlah_penumpang' => $request->input('jumlah_penumpang'),
             'detail_penjemputan' => $request->input('detail_penjemputan'),
             'hari' => $request->input('hari'),
+            'tanggal_pemesanan' => $request->input('tanggal_pemesanan'),
             'nomor_kursi' => json_encode($request->nomor_kursi),
         ];
 
@@ -45,7 +48,7 @@ class PemesananController extends Controller
         }
 
         $kapasitasTaksi = $taksi->jumlah_penumpang;
-        $totalPesanan = Pemesanan::where('id_taksi', $taksi->id)->where('pesanan_selesai', 0)->sum('jumlah_penumpang');
+        $totalPesanan = Pemesanan::where('id_taksi', $taksi->id)->where('tanggal_pemesanan', $request->tanggal_pemesanan)->where('pesanan_selesai', 0)->sum('jumlah_penumpang');
         $sisaKapasitas = $kapasitasTaksi - $totalPesanan;
 
         if (count($request->nomor_kursi) > $kapasitasTaksi) {
@@ -61,6 +64,7 @@ class PemesananController extends Controller
             ->exists();
         // Cek apakah ada kursi yang sudah dipesan
         $kursiSudahDipesan = Pemesanan::where('id_taksi', $taksi->id)
+            ->where('tanggal_pemesanan', $request->input('tanggal_pemesanan'))
             ->whereJsonContains('nomor_kursi', $request->nomor_kursi)
             ->exists();
 
