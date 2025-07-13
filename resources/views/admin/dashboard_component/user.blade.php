@@ -320,33 +320,30 @@
     @foreach ($taksi as $item)
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                flatpickr("#tanggal-{{ $item->id }}", {
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    maxDate: new Date().fp_incr(6),
+                    disableMobile: true
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const tanggalInput = document.getElementById('tanggal-{{ $item->id }}');
+                const hariHidden = document.getElementById('hari-{{ $item->id }}');
 
-                document.querySelectorAll('.tanggal').forEach(input => {
-                    const id = input.dataset.id;
+                if (!tanggalInput || !hariHidden) return;
 
-                    // Inisialisasi flatpickr
-                    flatpickr(input, {
-                        dateFormat: "Y-m-d",
-                        minDate: "today",
-                        maxDate: new Date().fp_incr(6),
-                        disableMobile: true,
-                    });
+                tanggalInput.addEventListener('change', function() {
+                    const tanggal = new Date(this.value);
+                    const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                    const hari = hariIndo[tanggal.getDay()];
+                    hariHidden.value = hari;
 
-                    // Event saat tanggal berubah
-                    input.addEventListener('change', function() {
-                        const tanggal = new Date(this.value);
-                        if (isNaN(tanggal)) return;
-
-                        const hari = hariIndo[tanggal.getDay()];
-                        const hiddenInput = document.querySelector(`.hari[data-id="${id}"]`);
-                        if (hiddenInput) hiddenInput.value = hari;
-
-                        // Tandai radio sesuai hari
-                        const radioSelector =
-                            `input[type="radio"][value="${hari}"][name="hari_radio_${id}"]`;
-                        const radioToCheck = document.querySelector(radioSelector);
-                        if (radioToCheck) radioToCheck.checked = true;
+                    // Hanya tandai radio di dalam scope item ini
+                    document.querySelectorAll('#group-{{ $item->id }} input[type="radio"]').forEach(el => {
+                        el.checked = (el.value === hari);
                     });
                 });
             });
