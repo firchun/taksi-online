@@ -325,18 +325,22 @@
         });
     </script>
     <script>
-        const tanggalInput = document.getElementById('tanggal');
-        const hariHidden = document.getElementById('hari');
+        document.addEventListener('DOMContentLoaded', function() {
+            const tanggalInput = document.getElementById('tanggal');
+            const hariHidden = document.getElementById('hari');
 
-        tanggalInput.addEventListener('change', function() {
-            const tanggal = new Date(this.value);
-            const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            const hari = hariIndo[tanggal.getDay()];
-            hariHidden.value = hari;
+            if (!tanggalInput || !hariHidden) return; // antisipasi null
 
-            // (Opsional) Tandai radio agar aktif sesuai hari
-            document.querySelectorAll('input[type="radio"]').forEach(el => {
-                el.checked = (el.value === hari);
+            tanggalInput.addEventListener('change', function() {
+                const tanggal = new Date(this.value);
+                const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const hari = hariIndo[tanggal.getDay()];
+                hariHidden.value = hari;
+
+                // (Opsional) Tandai radio agar aktif sesuai hari
+                document.querySelectorAll('input[type="radio"]').forEach(el => {
+                    el.checked = (el.value === hari);
+                });
             });
         });
     </script>
