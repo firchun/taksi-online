@@ -178,8 +178,9 @@
                                     </div>
                                     <div class="mb-3">
                                         <label><strong>Pilih Tanggal (7 Hari ke Depan):</strong></label>
-                                        <input type="text" id="tanggal" name="tanggal_pemesanan"
-                                            class="form-control" placeholder="Pilih Tanggal">
+                                        <input type="text" id="tanggal-{{ $item->id }}"
+                                            name="tanggal_pemesanan" class="form-control"
+                                            placeholder="Pilih Tanggal">
                                     </div>
                                     <div class="mb-3">
                                         <div class="d-flex flex-wrap gap-2 mt-2 justify-content-center">
@@ -196,7 +197,7 @@
                                             @endphp
 
                                             <!-- Hidden input yang akan dikirim ke server -->
-                                            <input type="hidden" name="hari" id="hari">
+                                            <input type="hidden" name="hari" id="hari-{{ $item->id }}">
 
                                             <!-- Radio yang hanya untuk tampilan (readonly) -->
                                             @foreach ($days as $day)
@@ -324,26 +325,28 @@
             disableMobile: true,
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tanggalInput = document.getElementById('tanggal');
-            const hariHidden = document.getElementById('hari');
+    @foreach ($taksi as $item)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const tanggalInput = document.getElementById('tanggal-{{ $item->id }}');
+                const hariHidden = document.getElementById('hari-{{ $item->id }}');
 
-            if (!tanggalInput || !hariHidden) return; // antisipasi null
+                if (!tanggalInput || !hariHidden) return;
 
-            tanggalInput.addEventListener('change', function() {
-                const tanggal = new Date(this.value);
-                const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                const hari = hariIndo[tanggal.getDay()];
-                hariHidden.value = hari;
+                tanggalInput.addEventListener('change', function() {
+                    const tanggal = new Date(this.value);
+                    const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                    const hari = hariIndo[tanggal.getDay()];
+                    hariHidden.value = hari;
 
-                // (Opsional) Tandai radio agar aktif sesuai hari
-                document.querySelectorAll('input[type="radio"]').forEach(el => {
-                    el.checked = (el.value === hari);
+                    // Hanya tandai radio di dalam scope item ini
+                    document.querySelectorAll('#group-{{ $item->id }} input[type="radio"]').forEach(el => {
+                        el.checked = (el.value === hari);
+                    });
                 });
             });
-        });
-    </script>
+        </script>
+    @endforeach
     <script>
         $(document).ready(function() {
             @foreach ($taksi as $item)
