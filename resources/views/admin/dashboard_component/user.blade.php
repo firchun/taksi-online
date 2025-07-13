@@ -317,15 +317,15 @@
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <script>
-        flatpickr("#tanggal", {
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            maxDate: new Date().fp_incr(6), // 6 hari ke depan
-            disableMobile: true,
-        });
-    </script>
     @foreach ($taksi as $item)
+        <script>
+            flatpickr("#tanggal-{{ $item->id }}", {
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                maxDate: new Date().fp_incr(6), // 6 hari ke depan
+                disableMobile: true,
+            });
+        </script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const tanggalInput = document.getElementById('tanggal-{{ $item->id }}');
