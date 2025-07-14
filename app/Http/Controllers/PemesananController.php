@@ -22,7 +22,7 @@ class PemesananController extends Controller
             'jumlah_penumpang' => 'required|integer|min:1',
             'nama' => 'nullable|array|min:1', // Nama boleh kosong
             'nomor_kursi.*' => 'string|in:DP,TL,TK,BL,BK,BS', // Validasi kursi yang tersedia
-            'nama.*' => 'nullable|string|max:255',
+            'nama.*' => 'nullable|max:255',
         ]);
 
         $pemesananData = [
