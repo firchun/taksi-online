@@ -430,7 +430,7 @@
                             const div = document.createElement('div');
                             div.classList.add('input-group', 'mb-2');
                             div.innerHTML = `
-                        <input type="text" name="nama[{{ $item->id }}][]" class="form-control" placeholder="Nama Penumpang ${i}">
+                        <input type="text" name="nama[]" class="form-control" placeholder="Nama Penumpang ${i}">
                     `;
                             penumpangList.appendChild(div);
                         }
