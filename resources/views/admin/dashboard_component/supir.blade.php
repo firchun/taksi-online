@@ -14,6 +14,11 @@
                 ->where('pesanan_selesai', 0)
                 ->where('tanggal_pemesanan', '>=', now()->format('Y-m-d'))
                 ->get();
+            $pesananExp = App\Models\Pemesanan::with(['user', 'mobil'])
+                ->where('id_taksi', $taksi->first()->id ?? null)
+                ->where('pesanan_selesai', 0)
+                ->where('tanggal_pemesanan', '<=', now()->format('Y-m-d'))
+                ->get();
             $cek_full = false;
             if ($pesanan) {
                 $cek_full = $pesanan->sum('jumlah_penumpang') ?? 0 == $detail_taksi->jumlah_penumpang ? true : false;
@@ -342,6 +347,86 @@
                                                             <small class=" text-muted">Klik tombol ini jika Pesanan
                                                                 telah
                                                                 selesai</small>
+                                                        @else
+                                                            <small class="text-muted">Telah Selesai</small>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6" class="text-center">Tidak ada pemesanan saat
+                                                        ini
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h4>Pemesanan Mobil Terlewat</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>#</th>
+                                                <th>Nama Pemesan</th>
+                                                <th>Penumpang</th>
+                                                <th>Rute</th>
+                                                <th>Selesai</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($pesananLater as $item)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $item->user->name }}<br><small
+                                                            class="text-muted">{{ $item->tanggal_pemesanan }} -
+                                                            {{ $item->hari }}</small>
+                                                    </td>
+                                                    <td>{{ $item->jumlah_penumpang }} Orang<br>
+                                                        <small class="text-muted">
+                                                            Kursi :
+                                                            @php
+                                                                $kursiMapping = [
+                                                                    'DP' => '1. Depan (Samping Sopir)',
+                                                                    'TL' => '2. Tengah Kiri',
+                                                                    'BS' => '3. Bench Seat',
+                                                                    'TK' => '4. Tengah Kanan',
+                                                                    'BL' => '5. Belakang Kiri',
+                                                                    'BT' => '6. Belakang Tengah',
+                                                                    'BK' => '7. Belakang Kanan',
+                                                                ];
+                                                                $nomorKursi =
+                                                                    json_decode($item->nomor_kursi, true) ?? [];
+                                                            @endphp
+                                                            @foreach ($nomorKursi as $kursi)
+                                                                {{ $kursiMapping[$kursi] ?? 'Tidak diketahui' }}{{ !$loop->last ? ', ' : '' }}
+                                                            @endforeach
+                                                        </small><br>
+                                                        <small>
+                                                            @foreach (App\Models\Penumpang::where('id_pemesanan', $item->id)->get() as $listPenumpang)
+                                                                <small class="p-1 bg-primary mx-1 text-white rounded">
+                                                                    {{ $listPenumpang->nama }}
+                                                                </small>
+                                                            @endforeach
+                                                        </small>
+                                                    </td>
+                                                    <td>Dari : <strong>{{ $item->asal->nama_lokasi }}</strong> ke
+                                                        <strong>{{ $item->tujuan->nama_lokasi }}</strong>
+                                                    </td>
+
+                                                    <td>
+                                                        @if ($item->pesanan_selesai == 0)
+                                                            <div class="d-flex flex-column w-100">
+
+                                                                <a href="{{ route('tolak-pesanan', $item->id) }}"
+                                                                    class="btn btn-sm btn-danger w-100">Hapus</a>
+                                                            </div>
                                                         @else
                                                             <small class="text-muted">Telah Selesai</small>
                                                         @endif
