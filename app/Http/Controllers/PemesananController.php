@@ -202,8 +202,14 @@ class PemesananController extends Controller
     public function tolakPesanan($id)
     {
         $pemesanan = Pemesanan::find($id);
+
         if (!$pemesanan) {
             return back()->with('error', 'Pesanan tidak ditemukan');
+        }
+        $taksi = Taksi::find($pemesanan->id_taksi);
+        if ($taksi->status == 'Full') {
+            $taksi->status = 'Tersedia';
+            $taksi->save();
         }
         $pemesanan->delete();
         return back()->with('success', 'Pesanan berhasil ditolak');

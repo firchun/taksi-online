@@ -271,9 +271,14 @@
                                         {{ $penumpang->tujuan->nama_lokasi }}</small><br>
                                     <small>
                                         Penumpang:
-                                        @foreach (App\Models\Penumpang::where('id_pemesanan', $penumpang->id)->get() as $listPenumpang)
-                                            {{ $listPenumpang->nama }}{{ !$loop->last ? ', ' : '' }}
-                                        @endforeach
+                                        @if ($penumpang->jumlah_penumpang > 1)
+                                            {{ $penumpang->user->name }} ,
+                                            @foreach (App\Models\Penumpang::where('id_pemesanan', $penumpang->id)->get() as $listPenumpang)
+                                                {{ $listPenumpang->nama }}{{ !$loop->last ? ', ' : '' }}
+                                            @endforeach
+                                        @else
+                                            {{ $penumpang->user->name }}
+                                        @endif
                                     </small><br>
                                     <small>
                                         Nomor Kursi:
